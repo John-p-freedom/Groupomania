@@ -1,10 +1,8 @@
-//Importation du token d'authentification
+//Import
 const jwt = require('jsonwebtoken');
-
-//Envoi le contenu du fichier .env dans l'object process.env
 require('dotenv').config()
 
-//Middleware d'authentification
+//Auth
 module.exports = (req, res, next) => {
   try {
     const token = req.headers.authorization.split(' ')[1];

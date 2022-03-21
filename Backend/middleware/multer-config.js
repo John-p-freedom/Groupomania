@@ -1,14 +1,12 @@
-//Importation de multer
+//Import
 const multer = require('multer');
-
-//Ajoute l'extension approprié sur le fichier envoyé
 const MIME_TYPES = {
   'image/jpg': 'jpg',
   'image/jpeg': 'jpg',
   'image/png': 'png'
 };
 
-//Constante qui indique où enregister les fichiers entrant
+//Enregistrement
 const storage = multer.diskStorage({
   destination: (req, file, callback) => {
     callback(null, 'images');
@@ -20,5 +18,5 @@ const storage = multer.diskStorage({
   }
 });
 
-//Exportation de multer
+//Export
 module.exports = multer({storage: storage}).single('image');

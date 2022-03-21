@@ -2,8 +2,10 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
+const db = require("../models");
+const fs = require("fs");
 
-//Create
+//Signup
 exports.signup = (req, res, next) => {
     bcrypt.hash(req.body.password, 10)
       .then(hash => {
@@ -25,9 +27,9 @@ exports.signup = (req, res, next) => {
       .catch(error => res.status(500).json({ error }));
 };
 
-//Read
+//Login
 exports.login = (req, res, next) => {
-    User.findOne({ email: req.body.email })
+    db.User.findOne({ email: req.body.email })
       .then(user => {
         if (!user) {
           return res.status(401).json({ error: 'Utilisateur introuvable' });
@@ -53,7 +55,7 @@ exports.login = (req, res, next) => {
 
 //Update
 exports.modifyUser = (req, res, next) => {
-  User.findOne({ _id: req.params.id })
+  db.User.findOne({ _id: req.params.id })
     .then((user) => {
       if (user !== req.auth.userId) {
         res.status(403).json({ error: "Utilisateur non authentifié" });
@@ -76,7 +78,7 @@ exports.modifyUser = (req, res, next) => {
 
 //Delete
 exports.deleteUser = (req, res, next) => {
-  User.findOne({ _id: req.params.id })
+  db.User.findOne({ _id: req.params.id })
     .then((user) => {
       if (user !== req.auth.userId) {
         res.status(403).json({ error: "Utilisateur non authentifié" });
