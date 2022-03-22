@@ -2,7 +2,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
-const db = require("../models");
+const db = require("../models/index");
 const fs = require("fs");
 
 //Signup
