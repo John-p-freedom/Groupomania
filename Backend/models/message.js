@@ -1,10 +1,8 @@
-//Importation de mongoose
-const mongoose = require('mongoose');
-
 //Création d'un schéma de données
-const messageSchema = mongoose.Schema({
-  message: { type: String, required: true },
-});
-
-//Exportation du schéma de données
-module.exports = mongoose.model('Message', messageSchema);
+module.exports = (sequelize, Sequelize) =>{
+  const Message = sequelize.define("message", {
+    _id: {TYPE: Sequelize.INTEGER, autoIncrement: true, primaryKey: true, allowNull: false, unique: true},
+    message: { TYPE: Sequelize.STRING, allowNull: false }
+  });
+  return Message;
+}

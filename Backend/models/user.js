@@ -1,21 +1,22 @@
 //Imports
-const mongoose = require('mongoose');
 const uniqueValidator = require('mongoose-unique-validator');
 
 //Schéma
-const userSchema = mongoose.Schema({
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  lastName: { type: String, required: true },
-  firstName: { type: String, required: true },
-  age: { type: Number, required: true },
-  poste: { type: String, required: true },
-  city: { type: String, required: true },
-  bio: { type: String }
-});
+module.exports = (sequelize, Sequelize) =>{
+  const User = sequelize.define('user',{
+    _id: {TYPE: Sequelize.INTEGER, autoIncrement: true, primaryKey: true, allowNull: false, unique: true},
+    email: { type: Sequelize.STRING, allowNull: false, unique: true },
+    password: { type: Sequelize.STRING, allowNull: false },
+    lastName: { type: Sequelize.STRING, allowNull: false },
+    firstName: { type: Sequelize.STRING, allowNull: false },
+    age: { type: Sequelize.NUMBER, allowNull: false },
+    poste: { type: Sequelize.STRING, allowNull: false },
+    city: { type: Sequelize.STRING, allowNull: false },
+    bio: { type: Sequelize.STRING, allowNull: false },
+    admin: { type: Sequelize.BOOLEAN, default: false }
+  });
+  return User;
+}
 
 //Validateur
-userSchema.plugin(uniqueValidator);
-
-//Export
-module.exports = mongoose.model('User', userSchema);
+User.plugin(uniqueValidator);

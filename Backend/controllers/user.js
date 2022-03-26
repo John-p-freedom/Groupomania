@@ -1,9 +1,9 @@
 //Imports
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const User = require('../models/User');
-const db = require("../models/index");
+const User = require('../models/user');
 const fs = require("fs");
+const db = require("../models");
 
 //Signup
 exports.signup = (req, res, next) => {
@@ -17,7 +17,8 @@ exports.signup = (req, res, next) => {
           age: req.body.birthday,
           poste: req.body.poste,
           city: req.body.city,
-          bio: req.body.bio
+          bio: req.body.bio,
+          admin: req.body.bio
         });
         user.save()
           .then(() => res.status(201).json({ message: 'Utilisateur créé !' }))
@@ -28,7 +29,7 @@ exports.signup = (req, res, next) => {
 
 //Login
 exports.login = (req, res, next) => {
-    db.User.findOne({ email: req.body.email })
+    db.findOne({ email: req.body.email })
       .then(user => {
         if (!user) {
           return res.status(401).json({ error: 'Utilisateur introuvable' });
@@ -54,7 +55,7 @@ exports.login = (req, res, next) => {
 
 //Update
 exports.modifyUser = (req, res, next) => {
-  db.User.findOne({ _id: req.params.id })
+  db.findOne({ _id: req.params.id })
     .then((user) => {
       if (user !== req.auth.userId) {
         res.status(403).json({ error: "Utilisateur non authentifié" });
@@ -70,7 +71,7 @@ exports.modifyUser = (req, res, next) => {
 
 //Delete
 exports.deleteUser = (req, res, next) => {
-  db.User.findOne({ _id: req.params.id })
+  db.findOne({ _id: req.params.id })
     .then((user) => {
       if (user !== req.auth.userId) {
         res.status(403).json({ error: "Utilisateur non authentifié" });

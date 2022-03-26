@@ -11,7 +11,9 @@ const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
 const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
-db.tutorials = require("../config/db.config")(sequelize, Sequelize);
+db.users = require("./user.js")(sequelize, Sequelize);
+db.messages = require("./message.js")(sequelize, Sequelize);
+db.comments = require("./comment.js")(sequelize, Sequelize);
 
 //Export
 module.exports = db;

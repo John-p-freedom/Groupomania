@@ -24,9 +24,9 @@ app.use((req, res, next) => {
 db.sequelize.sync();
 app.use(express.json());
 app.use(helmet({crossOriginResourcePolicy: false,}));
-app.use('/api/auth', userRoutes);
-app.use('/api/message', messageRoutes);
-app.use('/api/comment', commentRoutes)
+app.use(userRoutes);
+app.use(messageRoutes);
+app.use(commentRoutes)
 
 //Export
 module.exports = app;
