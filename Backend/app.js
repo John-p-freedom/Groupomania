@@ -1,8 +1,6 @@
 //Import
 const express = require('express');
 const helmet = require('helmet');
-const mongoose = require('mongoose');
-const path = require('path');
 const db = require("./models");
 require('dotenv').config()
 
@@ -21,12 +19,11 @@ app.use((req, res, next) => {
 });
 
 //Middlewares
-db.sequelize.sync();
 app.use(express.json());
 app.use(helmet({crossOriginResourcePolicy: false,}));
-app.use(userRoutes);
-app.use(messageRoutes);
-app.use(commentRoutes)
+app.use('/api/users', userRoutes);
+app.use('/api/messages', messageRoutes);
+app.use('/api/comments', commentRoutes);
 
 //Export
 module.exports = app;

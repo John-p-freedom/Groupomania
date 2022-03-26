@@ -2,18 +2,18 @@
 const uniqueValidator = require('mongoose-unique-validator');
 
 //Schéma
-module.exports = (sequelize, Sequelize) =>{
+module.exports = (sequelize, Data) =>{
   const User = sequelize.define('user',{
-    _id: {TYPE: Sequelize.INTEGER, autoIncrement: true, primaryKey: true, allowNull: false, unique: true},
-    email: { type: Sequelize.STRING, allowNull: false, unique: true },
-    password: { type: Sequelize.STRING, allowNull: false },
-    lastName: { type: Sequelize.STRING, allowNull: false },
-    firstName: { type: Sequelize.STRING, allowNull: false },
-    age: { type: Sequelize.NUMBER, allowNull: false },
-    poste: { type: Sequelize.STRING, allowNull: false },
-    city: { type: Sequelize.STRING, allowNull: false },
-    bio: { type: Sequelize.STRING, allowNull: false },
-    admin: { type: Sequelize.BOOLEAN, default: false }
+    _id: {TYPE: Data.INTEGER, autoIncrement: true, primaryKey: true, allowNull: false, unique: true},
+    email: { type: Data.STRING, allowNull: false, unique: true },
+    password: { type: Data.STRING, allowNull: false },
+    lastName: { type: Data.STRING, allowNull: false },
+    firstName: { type: Data.STRING, allowNull: false },
+    age: { type: Data.NUMBER, allowNull: false },
+    poste: { type: Data.STRING, allowNull: false },
+    city: { type: Data.STRING, allowNull: false },
+    bio: { type: Data.STRING, allowNull: false },
+    admin: { type: Data.BOOLEAN, default: false }
   });
   return User;
 }

@@ -3,7 +3,8 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const fs = require("fs");
-const db = require("../models");
+const db = require("../models/index");
+const user = require('../models/user');
 
 //Signup
 exports.signup = (req, res, next) => {
@@ -29,7 +30,7 @@ exports.signup = (req, res, next) => {
 
 //Login
 exports.login = (req, res, next) => {
-    db.findOne({ email: req.body.email })
+    db.users.findOne({ email: req.body.email })
       .then(user => {
         if (!user) {
           return res.status(401).json({ error: 'Utilisateur introuvable' });
@@ -55,14 +56,14 @@ exports.login = (req, res, next) => {
 
 //Update
 exports.modifyUser = (req, res, next) => {
-  db.findOne({ _id: req.params.id })
+  db.users.findOne({ _id: req.params.id })
     .then((user) => {
       if (user !== req.auth.userId) {
         res.status(403).json({ error: "Utilisateur non authentifié" });
       }
       const userObject = req.file ?
           {...JSON.parse(req.body.user)} : { ...req.body };
-      User.updateOne({ _id: req.params.id }, { ...userObject, _id: req.params.id })
+      db.users.updateOne({ _id: req.params.id }, { ...userObject, _id: req.params.id })
         .then(() => res.status(200).json({ message: "Utilisateur modifié" }))
         .catch((error) => res.status(400).json({ error }));
   })
@@ -71,14 +72,14 @@ exports.modifyUser = (req, res, next) => {
 
 //Delete
 exports.deleteUser = (req, res, next) => {
-  db.findOne({ _id: req.params.id })
+  db.users.findOne({ _id: req.params.id })
     .then((user) => {
-      if (user !== req.auth.userId) {
-        res.status(403).json({ error: "Utilisateur non authentifié" });
-      }
-      User.deleteOne({ _id: req.params.id })
+      if (user.admin == true || user == req.auth.userId){
+        db.users.deleteOne({ _id: req.params.id })
         .then(() => res.status(200).json({ message: "Utilisateur supprimée" }))
         .catch((error) => res.status(400).json({ error }));
-    })
+      } else {
+        res.status(403).json({ error: "Utilisateur non authentifié" });
+      }})
     .catch((error) => res.status(500).json({ error }));
 };

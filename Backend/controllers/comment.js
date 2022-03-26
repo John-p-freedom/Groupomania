@@ -5,14 +5,14 @@ const fs = require('fs');
 
 //Read All
 exports.getAllComment = (req, res, next) => {
-  db.find()
+  db.comments.find()
     .then((comment) => res.status(200).json(comment))
     .catch((error) => res.status(400).json({ error }));
 }
 
 //Read One
 exports.getOneComment = (req, res, next) => {
-  db.findOne({ _id: req.params.id })
+  db.comments.findOne({ _id: req.params.id })
     .then((comment) => res.status(200).json(comment))
     .catch((error) => res.status(404).json({ error }));
 }
@@ -24,14 +24,14 @@ exports.createComment = (req, res, next) => {
   const comment = new Comment({
     ...commentObject
   });
-  db.save()
+  db.comments.save()
     .then(() => res.status(201).json({ comment: 'Comment enregistré !'}))
     .catch((error) => res.status(400).json({ error }));
 };
 
 //Update
 exports.modifyComment = (req, res, next) => {
-  db.findOne({ _id: req.params.id })
+  db.comments.findOne({ _id: req.params.id })
     .then((comment) => {
       if (comment.userId !== req.auth.userId) {
         res.status(403).json({ error: "Requête non autorisée" });
@@ -40,7 +40,7 @@ exports.modifyComment = (req, res, next) => {
           {
             ...JSON.parse(req.body.comment),
           } : { ...req.body };
-      db.updateOne({ _id: req.params.id }, { ...commentObject, _id: req.params.id })
+      db.comments.updateOne({ _id: req.params.id }, { ...commentObject, _id: req.params.id })
         .then(() => res.status(200).json({ comment: "Comment modifiée." }))
         .catch((error) => res.status(400).json({ error }));
   })
@@ -49,12 +49,12 @@ exports.modifyComment = (req, res, next) => {
 
 //Delete
 exports.deleteComment = (req, res, next) => {
-  db.findOne({ _id: req.params.id })
+  db.comments.findOne({ _id: req.params.id })
     .then((comment) => {
       if (comment.userId !== req.auth.userId) {
         res.status(403).json({ error: "Requête non autorisé" });
       }
-      db.deleteOne({ _id: req.params.id })
+      db.comments.deleteOne({ _id: req.params.id })
       .then(() => res.status(200).json({ comment: "Comment supprimé !" }))
       .catch((error) => res.status(400).json({ error }));
     })

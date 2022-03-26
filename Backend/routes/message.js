@@ -5,11 +5,11 @@ const auth = require("../middleware/auth");
 const multer = require("../middleware/multer-config");
 
 //Routes
-module.exports = app => {
-    router.post("/new", auth, multer, messageCtrl.createMessage);
-    router.get("/all", messageCtrl.getAllMessage);
-    router.get("/:id", messageCtrl.getOneMessage);
-    router.put("/:id", auth, multer, messageCtrl.updateMessage);
-    router.delete("/:id", auth, messageCtrl.deleteMessage);
-    app.use('/api/messages', router )
-}
+router.post("/new", auth, multer, messageCtrl.createMessage);
+router.get("/all", messageCtrl.getAllMessage);
+router.get("/:id", messageCtrl.getOneMessage);
+router.put("/:id", auth, multer, messageCtrl.updateMessage);
+router.delete("/:id", auth, messageCtrl.deleteMessage);
+    
+//Export
+module.exports = router;
