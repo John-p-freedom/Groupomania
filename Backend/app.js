@@ -9,7 +9,7 @@ require('dotenv').config()
 //Routes
 const userRoutes = require('./routes/user');
 const messageRoutes = require('./routes/message');
-const remarkRoutes = require('/routes/remark');
+const commentRoutes = require('/routes/comment');
 
 //Écoute
 const app = express();
@@ -26,7 +26,7 @@ app.use(express.json());
 app.use(helmet({crossOriginResourcePolicy: false,}));
 app.use('/api/auth', userRoutes);
 app.use('/api/message', messageRoutes);
-app.use('/api/remark', remarkRoutes)
+app.use('/api/comment', commentRoutes)
 
 //Export
 module.exports = app;
