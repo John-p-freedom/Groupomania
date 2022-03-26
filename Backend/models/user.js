@@ -11,7 +11,6 @@ const userSchema = mongoose.Schema({
   age: { type: Number, required: true },
   poste: { type: String, required: true },
   city: { type: String, required: true },
-  imageUrl: { type: String, required: true },
   bio: { type: String }
 });
 

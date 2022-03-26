@@ -17,7 +17,6 @@ exports.signup = (req, res, next) => {
           age: req.body.birthday,
           poste: req.body.poste,
           city: req.body.city,
-          imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
           bio: req.body.bio
         });
         user.save()
@@ -60,15 +59,8 @@ exports.modifyUser = (req, res, next) => {
       if (user !== req.auth.userId) {
         res.status(403).json({ error: "Utilisateur non authentifié" });
       }
-      if (req.file) {
-        const filename = user.imageUrl.split("/images/")[1];
-        fs.unlinkSync(`images/${filename}`);
-      }
       const userObject = req.file ?
-          {
-            ...JSON.parse(req.body.user),
-            imageUrl: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
-          } : { ...req.body };
+          {...JSON.parse(req.body.user)} : { ...req.body };
       User.updateOne({ _id: req.params.id }, { ...userObject, _id: req.params.id })
         .then(() => res.status(200).json({ message: "Utilisateur modifié" }))
         .catch((error) => res.status(400).json({ error }));
@@ -82,14 +74,10 @@ exports.deleteUser = (req, res, next) => {
     .then((user) => {
       if (user !== req.auth.userId) {
         res.status(403).json({ error: "Utilisateur non authentifié" });
-      } else if (user == req.auth.userId) {
-        const filename = user.imageUrl.split("/images/")[1];
-        fs.unlink(`images/${filename}`, () => {
-          User.deleteOne({ _id: req.params.id })
-            .then(() => res.status(200).json({ message: "Utilisateur supprimée" }))
-            .catch((error) => res.status(400).json({ error }));
-        });
       }
+      User.deleteOne({ _id: req.params.id })
+        .then(() => res.status(200).json({ message: "Utilisateur supprimée" }))
+        .catch((error) => res.status(400).json({ error }));
     })
     .catch((error) => res.status(500).json({ error }));
 };
