@@ -1,10 +1,7 @@
-//Imports
-const uniqueValidator = require('mongoose-unique-validator');
-
 //Schéma
 module.exports = (sequelize, Data) =>{
   const User = sequelize.define('user',{
-    _id: {TYPE: Data.INTEGER, autoIncrement: true, primaryKey: true, allowNull: false, unique: true},
+    id: {type: Data.INTEGER, autoIncrement: true, primaryKey: true, allowNull: false, unique: true},
     email: { type: Data.STRING, allowNull: false, unique: true },
     password: { type: Data.STRING, allowNull: false },
     lastName: { type: Data.STRING, allowNull: false },
@@ -17,6 +14,3 @@ module.exports = (sequelize, Data) =>{
   });
   return User;
 }
-
-//Validateur
-User.plugin(uniqueValidator);

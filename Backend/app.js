@@ -1,14 +1,18 @@
 //Import
 const express = require('express');
 const helmet = require('helmet');
-const db = require("./models");
 require('dotenv').config()
+const db = require("./models");
+db.sequelize.sync({ force: true }).then(() => {
+    console.log("Drop and re-sync db.");
+});
+
 
 //Routes
 const userRoutes = require('./routes/user');
 const messageRoutes = require('./routes/message');
-const commentRoutes = require('/routes/comment');
-const likeRoutes = require('./routes/like');
+const commentRoutes = require('./routes/comment');
+//const likeRoutes = require('./routes/like');
 
 //Écoute
 const app = express();
@@ -25,7 +29,7 @@ app.use(helmet({crossOriginResourcePolicy: false,}));
 app.use('/api/users', userRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/comments', commentRoutes);
-app.use('/api/likes', likeRoutes);
+//app.use('/api/likes', likeRoutes);
 
 //Export
 module.exports = app;
