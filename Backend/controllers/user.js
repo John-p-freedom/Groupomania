@@ -13,12 +13,6 @@ exports.signup = (req, res, next) => {
         const user = new User({
           email: req.body.email,
           password: hash,
-          lastName: req.body.lastName,
-          firstName: req.body.firstName,
-          age: req.body.birthday,
-          poste: req.body.poste,
-          city: req.body.city,
-          bio: req.body.bio,
           admin: req.body.bio
         });
         user.save()

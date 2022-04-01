@@ -1,0 +1,10 @@
+@mixin label {
+    display: block;
+    float: left;
+    width: 150px;
+    font-size: larger;
+}
+@mixin input {
+    height: 16px;
+    font-size: medium;
+}
