@@ -37,8 +37,7 @@
 </template>
 
 <script>
-    //Pourquoi les addEventListener font beuguer le site et ne veulent pas fonctionner ? (error : Cannot read properties of null (reading 'addEventListener')) 
-    /*let emailLogin = document.querySelector("#emailLogin");
+    let emailLogin = document.querySelector("#emailLogin");
     let emailLoginError = document.querySelector("#emailLoginError");
 
     if (emailLogin){
@@ -86,7 +85,7 @@
         passwordLoginError.classlist.add("text-danger");
         return false;
         }
-    };*/
+    };
 </script>
 
 <style lang="scss">

@@ -39,8 +39,7 @@
 
 <!--------------------------------JAVASCRIPT-------------------------------->
 <script>
-  //Pourquoi les addEventListener font beuguer le site et ne veulent pas fonctionner ? (error : Cannot read properties of null (reading 'addEventListener')) 
-  /*let emailSignup = document.querySelector("#emailSignup");
+  let emailSignup = document.querySelector("#emailSignup");
   let emailSignupError = document.querySelector("#emailSignupError");
 
   emailSignup.addEventListener("change", () => {
@@ -86,11 +85,9 @@
       passwordSignupError.classlist.add("text-danger");
       return false;
     }
-  };*/
+  };
 
-  //Pourquoi Fetch ne fonctionne pas ?
-
-  /*let order = document.querySelector("#order");
+  let order = document.querySelector("#order");
   order.addEventListener("click", function send(){
 
     let user = {
@@ -114,7 +111,7 @@
           console.log(error);
         })
     }     
-  });*/  
+  });
 </script>
 
 <!--------------------------------CSS-------------------------------->
