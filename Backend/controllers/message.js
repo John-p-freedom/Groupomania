@@ -52,7 +52,7 @@ exports.deleteMessage = (req, res, next) => {
   db.messages.findOne({ _id: req.params.id })
     .then((message) => {
       if (message.userId !== req.auth.userId) {
-        res.status(403).json({ error: "Requête non autorisé" });
+        return res.status(403).json({ error: "Requête non autorisé" });
       }
       db.messages.deleteOne({ _id: req.params.id })
       .then(() => res.status(200).json({ message: "Message supprimé !" }))

@@ -1,6 +1,7 @@
 //Import
 const jwt = require('jsonwebtoken');
-require('dotenv').config()
+const db = require("../models");
+const User = db.users;
 
 //Auth
 module.exports = (req, res, next) => {
@@ -8,11 +9,14 @@ module.exports = (req, res, next) => {
     const token = req.headers.authorization.split(' ')[1];
     const decodedToken = jwt.verify(token, process.env.TOKEN);
     const userId = decodedToken.userId;
-    req.auth = { userId };  
     if (req.body.userId && req.body.userId !== userId) {
       throw 'User ID invalide';
     } else {
-      next();
+      User.findOne({id:userId})
+      .then(user => {
+        req.auth = { userId, admin: user.admin}
+        next();
+      })
     }
   } catch {
     res.status(401).json({

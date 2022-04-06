@@ -2,13 +2,12 @@
 const router = require("express").Router();
 const commentCtrl = require("../controllers/comment");
 const auth = require("../middleware/auth");
-const multer = require("../middleware/multer-config");
 
 //Routes
-router.post("/new", auth, multer, commentCtrl.createComment);
+router.post("/new", auth, commentCtrl.createComment);
 router.get("/all", commentCtrl.getAllComment);
 router.get("/:id", commentCtrl.getOneComment);
-router.put("/:id", auth, multer, commentCtrl.modifyComment);
+router.put("/:id", auth, commentCtrl.modifyComment);
 router.delete("/:id", auth, commentCtrl.deleteComment);
     
 //Export

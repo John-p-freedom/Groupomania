@@ -3,7 +3,7 @@ const express = require('express');
 const helmet = require('helmet');
 require('dotenv').config()
 const db = require("./models");
-db.sequelize.sync({ force: true }).then(() => {
+db.sequelize.sync({ force: false }).then(() => {
     console.log("Drop and re-sync db.");
 });
 
