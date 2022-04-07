@@ -3,14 +3,14 @@
     <div class="header">
 
       <div class="header__logo">
-        <img src="../assets/icon-monochrome-white.png" alt="Logo groupomania">
+        <img src="../assets/icon-monochrome-white.webp" alt="Logo groupomania">
       </div>
 
       <div class="header__line"></div>
 
       <nav class="header__nav">
         <p @click="ShowSignupSwitch">Inscription</p>
-        <p @click="ShowLoginSwitch">Connection</p>
+        <p @click="ShowLoginSwitch">Connexion</p>
       </nav>
     </div>
 
@@ -29,7 +29,7 @@
             </label>
 
             <input type="texte" name="email" @change="emailLoginChange" size="25" placeholder="Ex: exemple@email.com" maxlength="50" required>
-            <p v-if="emailLoginErrorShow">Adresse email invalide, veuillez respecter le format exemple@email.com</p>
+            <p v-show="emailLoginErrorShow">Adresse email invalide, veuillez respecter le format exemple@email.com</p>
           </div>
 
           <div class="login__form__password">
@@ -38,6 +38,8 @@
             </label>
 
             <input type="password" name="password" @change="passwordLoginChange" size="25" maxlength="50" required>
+            <font-awesome-icon icon="fa-regular fa-eye" />
+            <font-awesome-icon icon="fa-regular fa-eye-slash" />
             <p v-if="passwordLoginErrorShow">Le mot de passe doit contenir au minimum une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial</p>
           </div>
 
@@ -73,11 +75,13 @@
             </label>
 
             <input type="password" name="password" @change="passwordSignupChange" size="25" maxlength="50" required>
+            <font-awesome-icon icon="fa-regular fa-eye" />
+            <font-awesome-icon icon="fa-regular fa-eye-slash" />
             <p v-if="passwordSignupErrorShow">Le mot de passe doit contenir au minimum une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial</p>
           </div>
 
           <div class="signup__form__submit">
-            <input type="submit" id="order" value="Envoyer" formmethod="post"/>
+            <input type="submit" @click.prevent="orderSubmit" value="Envoyer" formmethod="post"/>
           </div>
 
         </form>
@@ -88,87 +92,82 @@
 
 <script>
   export default {
-      name: "HomeView",
-      data: function (){
-        return {
-          ShowSignup: false,
-          ShowLogin: false,
-          emailLoginErrorShow: false,
-          passwordLoginErrorShow: false,
-          emailSignupErrorShow: false,
-          passwordSignupErrorShow: false
+    name: "HomeView",
+    data: function (){
+      return {
+        ShowSignup: false,
+        ShowLogin: false,
+        emailLoginErrorShow: false,
+        passwordLoginErrorShow: false,
+        emailSignupErrorShow: false,
+        passwordSignupErrorShow: false
+      }
+    },
+    methods: {
+      ShowLoginSwitch(){
+        this.ShowLogin = true;
+        this.ShowSignup = false;
+      },
+      ShowSignupSwitch(){
+        this.ShowSignup = true;
+        this.ShowLogin = false;
+      },
+      emailLoginChange(){
+        let regExpEmailLogin = new RegExp ("^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$", "g");
+        if (regExpEmailLogin.test(this.value)){
+          this.emailLoginErrorShow = false;
         }
       },
-      methods: {
-        ShowLoginSwitch(){
-          this.ShowLogin = true;
-          this.ShowSignup = false;
-        },
-        ShowSignupSwitch(){
-          this.ShowSignup = true;
-          this.ShowLogin = false;
-        },
-        emailLoginChange(){
-          let regExpEmailLogin = new RegExp ("^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$", "g");
-          if (!regExpEmailLogin.test(this.value)){
-            return this.emailLoginErrorShow = true;
-          }
-        },
-        passwordLoginChange(){
-          let regExpPasswordLogin = new RegExp ("^ (?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[*.!@$%^&(){}[]:;<>,.?/~_+-=|]).{8,32}$");
-          if (!regExpPasswordLogin.test(this.value)){
-            return this.passwordLoginErrorShow = true;
-          }
-        },
-        emailSignupChange(){
-          let regExpEmailSignup = new RegExp ("^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$", "g");
-          if (!regExpEmailSignup.test(this.value)){
-            return this.emailSignupErrorShow = true;
-          }
-        },
-        passwordSignupChange(){
-          let regExpPasswordSignup = new RegExp ("^ (?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[*.!@$%^&(){}[]:;<>,.?/~_+-=|]).{8,32}$");
-          if (!regExpPasswordSignup.test(this.value)){
-            return this.passwordSignupErrorShow = true;
-          }
+      passwordLoginChange(){
+        let regExpPasswordLogin = new RegExp ("^ (?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[*.!@$%^&(){}[]:;<>,.?/~_+-=|]).{8,32}$");
+        if (!regExpPasswordLogin.test(this.value)){
+          return this.passwordLoginErrorShow = true;
         }
-      }
-  }
-
-  /*let order = document.querySelector("#order");
-  order.addEventListener("click", function send(){
-
-    let user = {
-      email : document.querySelector("#emailSignup").value,
-      password : document.querySelector("#passwordSignup").value,
-      admin : false
-    };
-
-    if (validEmailSignup(emailSignup) && validPasswordSignup(passwordSignup)){
-
-      fetch ("http://localhost:3000/api/users/signup", {method: "post", headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}, body: JSON.stringify(user)})
+      },
+      emailSignupChange(){
+        let regExpEmailSignup = new RegExp ("^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$", "g");
+        if (!regExpEmailSignup.test(this.value)){
+          return this.emailSignupErrorShow = true;
+        }
+      },
+      passwordSignupChange(){
+        let regExpPasswordSignup = new RegExp ("^ (?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[*.!@$%^&(){}[]:;<>,.?/~_+-=|]).{8,32}$");
+        if (!regExpPasswordSignup.test(this.value)){
+          return this.passwordSignupErrorShow = true;
+        }
+      },
+      /*orderSubmit(){
+        let user = {
+          email : document.querySelector("#emailSignup").value,
+          password : document.querySelector("#passwordSignup").value,
+          admin : false
+        };
+        fetch ("http://localhost:3000/api/users/signup", {method: "post", headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}, body: JSON.stringify(user)})
         .then(function(res){
           if (res.ok){
             return res.json();
           }
         })
-        .then(function(){
-          
+        .then(function(value){
+          location.href = `./message?userId=${value.userId}`;
         })
         .catch(function(error){
           console.log(error);
         })
-    }     
-  });*/
+      }*/
+    }
+  }
 </script>
 
 <style lang="scss">
   @import "../utils/variables.scss";
   @import "../utils/mixins.scss";
+  @import "../utils/keyframes.scss";
   body {
-  background-image: url("../assets/Fond_group.jpg");
+  background-image: url("../assets/Fond_group.webp");
   background-repeat: no-repeat;
   background-size: cover;
+  //animation: imgMoove 5s ease-out both;
     .header {
       display: flex;
       flex-direction: column;
