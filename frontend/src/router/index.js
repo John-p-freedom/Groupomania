@@ -10,6 +10,11 @@ const routes = [
     path: '/message',
     name: 'MessageView',
     component: () => import('../views/message.vue')
+  },
+  {
+    path: '/profil',
+    name: 'ProfilView',
+    component: () => import('../views/profil.vue')
   }
 ];
 

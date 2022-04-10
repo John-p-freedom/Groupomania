@@ -46,6 +46,13 @@ exports.login = (req, res, next) => {
       .catch(error => res.status(500).json({ error }));
 };
 
+//Read One
+exports.getOneUser = (req, res, next) => {
+  db.users.findOne({ _id: req.params.id })
+    .then((user) => res.status(200).json(user))
+    .catch((error) => res.status(404).json({ error }));
+}
+
 //Update
 exports.modifyUser = (req, res, next) => {
   db.users.findOne({ id: req.params.id })

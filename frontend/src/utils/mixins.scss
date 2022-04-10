@@ -56,3 +56,10 @@
         }
     }
 }
+
+@mixin body {
+    body {
+        margin: 0%;
+        background-color: rgb(189, 189, 189);
+    }
+}
