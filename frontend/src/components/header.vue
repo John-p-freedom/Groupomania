@@ -14,7 +14,7 @@
             <div class="header__profil__show" v-show="profilShow">
                 <ul>
                     <li>
-                        <router-link to="/profil">
+                        <router-link to="/profil?id=idUrl">
                             <i class="fa-solid fa-gear"></i> Gérer mon profil
                         </router-link>
                     </li>
@@ -35,7 +35,8 @@
         name: "HeaderView",
         data: function (){
             return {
-                profilShow: false
+                profilShow: false,
+                idUrl: ""
             }
         },
         methods: {
@@ -45,6 +46,12 @@
                 } else {
                     this.profilShow = true;
                 }
+            },
+            getId(){
+                let productUrl = location.href;
+                let url = new URL(productUrl);
+                let idUrl = url.searchParams.get("id");
+                return idUrl;
             }
         }
     }
@@ -81,11 +88,9 @@
                 ul {
                     display: flex;
                     flex-direction: column;
-                    justify-content: space-around;
-                    align-items: center;
+                    align-items: flex-start;
                     li {
                         list-style-type: none;
-                        text-decoration: none;
                         font: 20px bold;
                         cursor: pointer;
                         &:hover {

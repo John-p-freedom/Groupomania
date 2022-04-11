@@ -114,26 +114,34 @@
       },
       emailLoginChange(){
         let regExpEmailLogin = new RegExp ("^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$", "g");
-        if (regExpEmailLogin.test(this.value)){
+        if (!regExpEmailLogin.test(this.value)){
           return this.emailLoginErrorShow = true;
+        } else {
+          return this.emailLoginErrorShow = false;
         }
       },
       passwordLoginChange(){
         let regExpPasswordLogin = new RegExp ("^ (?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[*.!@$%^&(){}[]:;<>,.?/~_+-=|]).{8,32}$");
         if (!regExpPasswordLogin.test(this.value)){
           return this.passwordLoginErrorShow = true;
+        } else {
+          return this.passwordLoginErrorShow = false;
         }
       },
       emailSignupChange(){
         let regExpEmailSignup = new RegExp ("^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$", "g");
         if (!regExpEmailSignup.test(this.value)){
           return this.emailSignupErrorShow = true;
+        } else {
+          return this.emailSignupErrorShow = false;
         }
       },
       passwordSignupChange(){
         let regExpPasswordSignup = new RegExp ("^ (?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[*.!@$%^&(){}[]:;<>,.?/~_+-=|]).{8,32}$");
         if (!regExpPasswordSignup.test(this.value)){
           return this.passwordSignupErrorShow = true;
+        } else {
+          return this.passwordSignupErrorShow = false;
         }
       },
       orderSubmitLogin(){
@@ -148,7 +156,7 @@
           }
         })
         .then(function(value){
-          location.href = `./message?id=${value.userId}`;
+          location.href=`/#/message/${value.userId}`;
         })
         .catch(function(error){
           console.log(error);
@@ -167,7 +175,7 @@
           }
         })
         .then(function(value){
-          location.href = `./message?id=${value.userId}`;
+          location.href=`/#/message?id=${value.userId}`;
         })
         .catch(function(error){
           console.log(error);

@@ -1,11 +1,12 @@
 <template>
-    <section id="appHeader">
+    <section id="viewsComponents">
         <HeaderView/>
     </section>
 
-    <section class="body">
-
-    </section>
+    <!--<section class="body" id="profil">
+        <p>{{email}}</p>
+        <p>{{password}}</p>
+    </section>-->
 </template>
 
 <script>
@@ -14,10 +15,30 @@
   let url = new URL(productUrl);
   let idUrl = url.searchParams.get("id");
   return idUrl;
-}*/
+}
+fetch (`http://localhost:3000/api/users/${getId()}`)
+  .then(function(res){
+    if (res.ok){
+      return res.json();
+    }
+  })
+  .then(function(user){
+    new Vue({
+        el: "#profil",
+        data: {
+            email : user.email,
+            password : user.password
+        }
+    })
+  })
+  .catch(function(err){
+    console.log(err);
+    return;
+  }
+);*/
 import HeaderView from '@/components/header.vue'
 export default {
-    name: "appHeader",
+    name: "viewsComponents",
     components:{
         HeaderView
     }
