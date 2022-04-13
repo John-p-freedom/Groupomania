@@ -29,7 +29,7 @@
             </label>
 
             <input type="texte" name="email" @change="emailLoginChange" id="emailLogin" size="25" placeholder="Ex: exemple@email.com" maxlength="50" required>
-            <p v-show="emailLoginErrorShow">Adresse email invalide, veuillez respecter le format exemple@email.com</p>
+            <p v-if="emailLoginErrorShow">Adresse email invalide, veuillez respecter le format exemple@email.com</p>
           </div>
 
           <div class="login__form__password">
@@ -145,6 +145,7 @@
         }
       },
       orderSubmitLogin(){
+        const self = this;
         let user = {
           email : document.querySelector("#emailLogin").value,
           password : document.querySelector("#passwordLogin").value,
@@ -155,14 +156,15 @@
             return res.json();
           }
         })
-        .then(function(value){
-          location.href=`/#/message/${value.userId}`;
+        .then(function(){
+          self.$router.push({path:"/message"});
         })
         .catch(function(error){
           console.log(error);
         })
       },
       orderSubmitSignup(){
+        const self = this;
         let user = {
           email : document.querySelector("#emailSignup").value,
           password : document.querySelector("#passwordSignup").value,
@@ -174,8 +176,8 @@
             return res.json();
           }
         })
-        .then(function(value){
-          location.href=`/#/message?id=${value.userId}`;
+        .then(function(){
+          self.$router.push({path:"/message"});
         })
         .catch(function(error){
           console.log(error);

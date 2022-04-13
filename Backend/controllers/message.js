@@ -5,7 +5,7 @@ const fs = require('fs');
 
 //Read All
 exports.getAllMessage = (req, res, next) => {
-  db.messages.find()
+  db.messages.findAll()
     .then((message) => res.status(200).json(message))
     .catch((error) => res.status(400).json({ error }));
 }

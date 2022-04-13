@@ -14,7 +14,7 @@
             <div class="header__profil__show" v-show="profilShow">
                 <ul>
                     <li>
-                        <router-link to="/profil?id=idUrl">
+                        <router-link to="/profil">
                             <i class="fa-solid fa-gear"></i> Gérer mon profil
                         </router-link>
                     </li>
