@@ -1,7 +1,9 @@
+<!--Reste à faire:
+RELOAD PAGE
+regex password encore à configurer-->
 <template>
   <div>
     <div class="header">
-
       <div class="header__logo">
         <img src="../assets/icon-monochrome-white.webp" alt="Logo groupomania">
       </div>
@@ -15,7 +17,6 @@
     </div>
 
     <section class="login" v-if="ShowLogin" id="login">
-
       <div class="login__title">
         <h2>Identifiez-vous</h2>
       </div>
@@ -26,33 +27,28 @@
           <div class="login__form__email">
             <label for="email">
               <strong>Email :</strong>
-            </label>
-
-            <input type="texte" name="email" @change="emailLoginChange" id="emailLogin" size="25" placeholder="Ex: exemple@email.com" maxlength="50" required>
-            <p v-if="emailLoginErrorShow">Adresse email invalide, veuillez respecter le format exemple@email.com</p>
+            </label>         
+            <input type="email" name="email" id="emailLogin" v-model="emailLoginModel" size="25" placeholder="Ex: exemple@email.com" maxlength="50" required>
+            <p v-if="validEmailLogin()">Veuillez respecter le format exemple@email.com</p>
           </div>
 
           <div class="login__form__password">
-            <label for="password">
+            <label for="passwordLogin">
               <strong>Mot de passe :</strong>
             </label>
-
-            <input type="password" name="password" @change="passwordLoginChange" id="passwordLogin" size="25" maxlength="50" required>
-            <i class="fa-solid fa-eye"></i>
-            <i class="fa-solid fa-eye-slash"></i>
-            <p v-if="passwordLoginErrorShow">Le mot de passe doit contenir au minimum une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial</p>
+            <input :type="passwordLoginType" v-model="passwordLoginModel" name="passwordLogin" id="passwordLogin" size="25" maxlength="50" required>
+            <i @click="switchPasswordLoginShow" class="fa-solid" :class="passwordLoginIcon"></i>
+            <p v-if="validPasswordLogin()">Le mot de passe doit contenir entre 8 et 32 caractères avec au minimum 1 lettre majuscule, 1 lettre minuscule, 1 chiffre et 1 caractère spécial</p>
           </div>
 
           <div class="login__form__submit">
             <input type="submit" value="Envoyer" @click.prevent="orderSubmitLogin" formmethod="post"/>
           </div>
-
         </form>
       </div>
     </section>
 
     <section class="signup" v-if="ShowSignup" id="signup">
-
       <div class="signup__title">
         <h2>Inscrivez-vous</h2>
       </div>
@@ -64,26 +60,22 @@
             <label for="email">
               <strong>Email :</strong>
             </label>
-
-            <input type="email" name="email" @change="emailSignupChange" id="emailSignup" size="25" placeholder="Ex: exemple@email.com" maxlength="50" required>
-            <p v-if="emailSignupErrorShow">Adresse email invalide, veuillez respecter le format exemple@email.com</p>
+            <input type="email" name="email" id="emailSignup" v-model="emailSignupModel" size="25" placeholder="Ex: exemple@email.com" maxlength="50" required>
+            <p v-if="validEmailSignup()">Veuillez respecter le format exemple@email.com</p>
           </div>
 
           <div class="signup__form__password">
             <label for="password">
               <strong>Mot de passe :</strong>
             </label>
-
-            <input type="password" name="password" @change="passwordSignupChange" id="passwordSignup" size="25" maxlength="50" required>
-            <i class="fa-solid fa-eye"></i>
-            <i class="fa-solid fa-eye-slash"></i>
-            <p v-if="passwordSignupErrorShow">Le mot de passe doit contenir au minimum une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial</p>
+            <input :type="passwordSignupType" v-model="passwordSignupModel" name="passwordSignup" id="passwordSignup" size="25" maxlength="50" required>
+            <i @click="switchPasswordSignupShow" class="fa-solid" :class="passwordSignupIcon"></i>
+            <p v-if="validPasswordSignup()">Le mot de passe doit contenir entre 8 et 32 caractères avec au minimum 1 lettre majuscule, 1 lettre minuscule, 1 chiffre et 1 caractère spécial</p>
           </div>
 
           <div class="signup__form__submit">
             <input type="submit" @click.prevent="orderSubmitSignup" value="Envoyer" formmethod="post"/>
           </div>
-
         </form>
       </div>
     </section>
@@ -95,12 +87,16 @@
     name: "HomeView",
     data: function (){
       return {
+        ShowLogin: true,
+        emailLoginModel: "",
+        passwordLoginType: "password",
+        passwordLoginModel: "",
+        passwordLoginIcon: "fa-eye-slash",
         ShowSignup: false,
-        ShowLogin: false,
-        emailLoginErrorShow: false,
-        passwordLoginErrorShow: false,
-        emailSignupErrorShow: false,
-        passwordSignupErrorShow: false
+        emailSignupModel: "",
+        passwordSignupType: "password",
+        passwordSignupModel: "",
+        passwordSignupIcon: "fa-eye-slash"
       }
     },
     methods: {
@@ -108,40 +104,32 @@
         this.ShowLogin = true;
         this.ShowSignup = false;
       },
-      ShowSignupSwitch(){
-        this.ShowSignup = true;
-        this.ShowLogin = false;
-      },
-      emailLoginChange(){
-        let regExpEmailLogin = new RegExp ("^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$", "g");
-        if (!regExpEmailLogin.test(this.value)){
-          return this.emailLoginErrorShow = true;
+      validEmailLogin(){
+        let RegExpForEmail = new RegExp ("^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$", "g");
+        let test = RegExpForEmail.test(this.emailLoginModel);
+        if (this.emailLoginModel == ""){
+          return false;
+        }
+        if (test){
+          return false;
         } else {
-          return this.emailLoginErrorShow = false;
+          return true;
         }
       },
-      passwordLoginChange(){
-        let regExpPasswordLogin = new RegExp ("^ (?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[*.!@$%^&(){}[]:;<>,.?/~_+-=|]).{8,32}$");
-        if (!regExpPasswordLogin.test(this.value)){
-          return this.passwordLoginErrorShow = true;
-        } else {
-          return this.passwordLoginErrorShow = false;
-        }
+      switchPasswordLoginShow(){
+        this.passwordLoginType = this.passwordLoginType === "password" ? "text" : "password";
+        this.passwordLoginIcon = this.passwordLoginIcon === "fa-eye-slash" ? "fa-eye" : "fa-eye-slash";
       },
-      emailSignupChange(){
-        let regExpEmailSignup = new RegExp ("^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$", "g");
-        if (!regExpEmailSignup.test(this.value)){
-          return this.emailSignupErrorShow = true;
-        } else {
-          return this.emailSignupErrorShow = false;
+      validPasswordLogin(){
+        let RegExpForPassword = new RegExp ("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[*.!@$%^&(){}[]:;<>,.?/~_+-=|]){8,32}$");
+        let test = RegExpForPassword.test(this.passwordLoginModel);
+        if (this.passwordLoginModel == ""){
+          return false;
         }
-      },
-      passwordSignupChange(){
-        let regExpPasswordSignup = new RegExp ("^ (?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[*.!@$%^&(){}[]:;<>,.?/~_+-=|]).{8,32}$");
-        if (!regExpPasswordSignup.test(this.value)){
-          return this.passwordSignupErrorShow = true;
+        if (test){
+          return false;
         } else {
-          return this.passwordSignupErrorShow = false;
+          return true;
         }
       },
       orderSubmitLogin(){
@@ -150,18 +138,52 @@
           email : document.querySelector("#emailLogin").value,
           password : document.querySelector("#passwordLogin").value,
         };
-        fetch ("http://localhost:3000/api/users/login", {method: "post", headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}, body: JSON.stringify(user)})
-        .then(function(res){
-          if (res.ok){
-            return res.json();
-          }
-        })
-        .then(function(){
-          self.$router.push({path:"/message"});
-        })
-        .catch(function(error){
-          console.log(error);
-        })
+        if (!this.validEmailLogin() && !this.validPasswordLogin()){
+          fetch ("http://localhost:3000/api/users/login", {method: "post", headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}, body: JSON.stringify(user)})
+            .then(function(res){
+              if (res.ok){
+                return res.json();
+              }
+            })
+            .then(function(){
+              self.$router.push({path:"/message"});
+            })
+            .catch(function(error){
+              console.log(error);
+            })
+        }
+      },
+      ShowSignupSwitch(){
+        this.ShowSignup = true;
+        this.ShowLogin = false;
+      },
+      validEmailSignup(){
+        let RegExpForEmail = new RegExp ("^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$", "g");
+        let test = RegExpForEmail.test(this.emailSignupModel);
+        if (this.emailSignupModel == ""){
+          return false;
+        }
+        if (test){
+          return false;
+        } else {
+          return true;
+        }
+      },
+      switchPasswordSignupShow(){
+        this.passwordSignupType = this.passwordSignupType === "password" ? "text" : "password";
+        this.passwordSignupIcon = this.passwordSignupIcon === "fa-eye-slash" ? "fa-eye" : "fa-eye-slash";
+      },
+      validPasswordSignup(){
+        let RegExpForPassword = new RegExp ("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[*.!@$%^&(){}[]:;<>,.?/~_+-=|]).{8,32}$");
+        let test = RegExpForPassword.test(this.passwordSignupModel);
+        if (this.passwordSignupModel == ""){
+          return false;
+        }
+        if (test){
+          return false;
+        } else {
+          return true;
+        }
       },
       orderSubmitSignup(){
         const self = this;
@@ -170,18 +192,20 @@
           password : document.querySelector("#passwordSignup").value,
           admin : false
         };
-        fetch ("http://localhost:3000/api/users/signup", {method: "post", headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}, body: JSON.stringify(user)})
-        .then(function(res){
-          if (res.ok){
-            return res.json();
-          }
-        })
-        .then(function(){
-          self.$router.push({path:"/message"});
-        })
-        .catch(function(error){
-          console.log(error);
-        })
+        if (!this.validEmailSignup() && !this.validPasswordSignup()){
+          fetch ("http://localhost:3000/api/users/signup", {method: "post", headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}, body: JSON.stringify(user)})
+          .then(function(res){
+            if (res.ok){
+              return res.json();
+            }
+          })
+          .then(function(){
+            self.$router.push({path:"/message"});
+          })
+          .catch(function(error){
+            console.log(error);
+          })
+        }
       }
     }
   }

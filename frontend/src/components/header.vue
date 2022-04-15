@@ -1,6 +1,5 @@
 <template>
     <header class="header">
-
         <div class="header__logo">
             <router-link to="/">
                 <img src="../assets/icon-monochrome-white.webp" alt="Logo Groupomania" class="header__logo__img">

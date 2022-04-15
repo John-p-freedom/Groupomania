@@ -1,3 +1,8 @@
+<!--Reste à faire:
+RELOAD PAGE
+Configurer section new pour nouveau message
+"bouton" modifier et supprimer à afficher ou non en fonction de admin et user
+paramétré like, dislike et commentaires-->
 <template>
     <section id="viewsComponents">
         <HeaderView/>
@@ -30,7 +35,7 @@
     </section>
 
     <div class="newMessage" @click.prevent="newMessage">
-        <i class="fa-solid fa-message fa-2x"></i>
+        <i i class="fa-solid fa-message fa-3x" title="Écrire un nouveau message"></i>
     </div>
 
     <section class="new" v-if="showNewMessage">
@@ -136,8 +141,13 @@ export default {
         }
     }
     .newMessage{
+        position: fixed;
+        right: 0;
+        width: 12em;
+        top: 95%;
+        margin-top: -2.5em;
         .fa-message{
-            color: map-get($color,txt_orange);
+            color: map-get($color,fond_blue);
             cursor: pointer;
         }
     }
