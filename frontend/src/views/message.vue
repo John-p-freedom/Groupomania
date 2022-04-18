@@ -1,58 +1,63 @@
 <!--Reste à faire:
 RELOAD PAGE
+paramétrer une erreur si non authentifié
 Configurer section new pour nouveau message
 "bouton" modifier et supprimer à afficher ou non en fonction de admin et user
-paramétré like, dislike et commentaires-->
+paramétrer like, dislike et commentaires-->
 <template>
-    <section id="viewsComponents">
-        <HeaderView/>
-    </section>
+    <span id="viewsComponents">
+        <section id="header">
+            <HeaderView/>
+        </section>
 
-    <section id="wall" v-for="item in items" :key="item">
-        <div class="messages">
-            <div class="messages__head">
-                <p>Message écrit par <strong>{{item.author}}</strong> :</p>
+        <section id="wall" v-for="msg in msgs" :key="msg">
+            <div class="messages">
+                <div class="messages__head">
+                    <p>Message écrit par <strong>{{msg.author}}</strong> :</p>
+                </div>
+
+                <div class="messages__body">
+                    <p>{{msg.message}}</p>
+                </div>
+
+                <div class="messages__line"></div>
+
+                <div class="messages__foot">
+                    <span class="messages__foot__txt">
+                        <p>Modifier</p>
+                        <p>Supprimer</p>
+                    </span>
+                    <span class="messages__foot__icons">
+                        <i class="fa-solid fa-thumbs-up fa-xl" title="J'aime"></i>
+                        <i class="fa-solid fa-thumbs-down fa-xl" title="Je n'aime pas"></i>
+                        <i class="fa-solid fa-comments fa-xl" title="Écrire un commentaire"></i>
+                    </span>
+                </div>
             </div>
+        </section>
 
-            <div class="messages__body">
-                <p>{{item.message}}</p>
-            </div>
-
-            <div class="messages__line"></div>
-
-            <div class="messages__foot">
-                <span class="messages__foot__txt">
-                    <p>Modifier</p>
-                    <p>Supprimer</p>
-                </span>
-                <span class="messages__foot__icons">
-                    <i class="fa-solid fa-thumbs-up fa-xl"></i>
-                    <i class="fa-solid fa-thumbs-down fa-xl"></i>
-                    <i class="fa-solid fa-comments fa-xl"></i>
-                </span>
-            </div>
+        <div class="newMessageIcon" @click.prevent="newMessage">
+            <i i class="fa-solid fa-message fa-3x" title="Écrire un nouveau message"></i>
         </div>
-    </section>
 
-    <div class="newMessage" @click.prevent="newMessage">
-        <i i class="fa-solid fa-message fa-3x" title="Écrire un nouveau message"></i>
-    </div>
-
-    <section class="new" v-if="showNewMessage">
-        
-    </section>
+        <section id="newMessage" v-if="showNewMessage">
+            <NewMessageView/>
+        </section>
+    </span>
 </template>
 
 <script>
 import HeaderView from '@/components/header.vue'
+import NewMessageView from '@/components/newMessage.vue'
 export default {
     name: "#viewsComponents",
     components:{
-        HeaderView
+        HeaderView,
+        NewMessageView
     },
     data: function (){
         return {
-            items: null,
+            msgs: null,
             showNewMessage: false
         };
     },
@@ -66,7 +71,7 @@ export default {
                     }
                 })
                 .then(function(messages){
-                    self.items = messages;
+                    self.msgs = messages;
                 })
                 .catch(function(err){
                     console.error(err);
@@ -140,7 +145,7 @@ export default {
             }
         }
     }
-    .newMessage{
+    .newMessageIcon{
         position: fixed;
         right: 0;
         width: 12em;

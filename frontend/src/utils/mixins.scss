@@ -1,50 +1,25 @@
-@mixin form {
+@mixin home {
     display: flex;
     flex-direction: column;
     align-items: center;
     background-color: map-get($color, fond_orange);
-    height: 400px;
+    height: 450px;
     margin: 15px 30% 15px 30%;
     &__title{
         font-size: 25px;
         margin-bottom: 40px;
     }
     &__form{
+        &__pseudo{
+            @include form;
+        }
         &__email{
-            margin-bottom: 40px;
-            label {
-                display: block;
-                float: left;
-                width: 150px;
-                font-size: larger;
-            }
-            input {
-                height: 16px;
-                font-size: medium;
-            }
-            p {
-                font-weight: bold;
-                text-align: center;
-            }
+            @include form;
         }
         &__password{
-            margin-bottom: 40px;
-            label {
-                display: block;
-                float: left;
-                width: 150px;
-                font-size: larger;
-            }
-            input {
-                height: 16px;
-                font-size: medium;
-            }
+            @include form;
             .fa-solid{
                 cursor: pointer;
-            }
-            p {
-                font-weight: bold;
-                text-align: center;
             }
         }
         &__submit{
@@ -59,6 +34,41 @@
                 cursor: pointer;
             } 
         }
+    }
+}
+
+@mixin form {
+    margin-bottom: 40px;
+    label {
+        display: block;
+        float: left;
+        width: 150px;
+        font-size: larger;
+    }
+    input {
+        height: 16px;
+        font-size: medium;
+    }
+    p {
+        font-weight: bold;
+        text-align: center;
+    }
+}
+
+@mixin profil {
+    margin-bottom: 40px;
+    label {
+        display: block;
+        float: left;
+        width: 400px;
+        font-size: medium;
+    }
+    input {
+        height: 16px;
+        font-size: medium;
+    }
+    p {
+        text-align: center;
     }
 }
 

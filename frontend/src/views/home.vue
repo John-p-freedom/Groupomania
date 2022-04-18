@@ -1,6 +1,7 @@
 <!--Reste à faire:
 RELOAD PAGE
-regex password encore à configurer-->
+hash admin? bonne méthode?
+problème fetch signup: comment récupéré id dans session storage?-->
 <template>
   <div>
     <div class="header">
@@ -29,7 +30,6 @@ regex password encore à configurer-->
               <strong>Email :</strong>
             </label>         
             <input type="email" name="email" id="emailLogin" v-model="emailLoginModel" size="25" placeholder="Ex: exemple@email.com" maxlength="50" required>
-            <p v-if="validEmailLogin()">Veuillez respecter le format exemple@email.com</p>
           </div>
 
           <div class="login__form__password">
@@ -38,8 +38,9 @@ regex password encore à configurer-->
             </label>
             <input :type="passwordLoginType" v-model="passwordLoginModel" name="passwordLogin" id="passwordLogin" size="25" maxlength="50" required>
             <i @click="switchPasswordLoginShow" class="fa-solid" :class="passwordLoginIcon"></i>
-            <p v-if="validPasswordLogin()">Le mot de passe doit contenir entre 8 et 32 caractères avec au minimum 1 lettre majuscule, 1 lettre minuscule, 1 chiffre et 1 caractère spécial</p>
           </div>
+
+          <p v-if="errorShowLogin">Identifiant et/ou mot de passe incorrect.</p>
 
           <div class="login__form__submit">
             <input type="submit" value="Envoyer" @click.prevent="orderSubmitLogin" formmethod="post"/>
@@ -56,12 +57,20 @@ regex password encore à configurer-->
       <div class="signup__form">
         <form method="post">
 
+          <div class="signup__form__pseudo">
+            <label for="pseudo">
+              <strong>Pseudo :</strong>
+            </label>
+            <input type="text" name="pseudo" id="pseudoSignup" v-model="pseudoSignupModel" size="25" maxlength="50" required>
+            <p v-if="pseudoErrorShowSignup">Votre pseudo doit être compris entre 3 et 10 lettres et les seuls caractères accepter sont les lettres de A à Z en minuscule ou majuscule et sans accents.</p>
+          </div>
+
           <div class="signup__form__email">
             <label for="email">
               <strong>Email :</strong>
             </label>
             <input type="email" name="email" id="emailSignup" v-model="emailSignupModel" size="25" placeholder="Ex: exemple@email.com" maxlength="50" required>
-            <p v-if="validEmailSignup()">Veuillez respecter le format exemple@email.com</p>
+            <p v-if="emailErrorShowSignup">Veuillez respecter le format exemple@email.com</p>
           </div>
 
           <div class="signup__form__password">
@@ -70,7 +79,7 @@ regex password encore à configurer-->
             </label>
             <input :type="passwordSignupType" v-model="passwordSignupModel" name="passwordSignup" id="passwordSignup" size="25" maxlength="50" required>
             <i @click="switchPasswordSignupShow" class="fa-solid" :class="passwordSignupIcon"></i>
-            <p v-if="validPasswordSignup()">Le mot de passe doit contenir entre 8 et 32 caractères avec au minimum 1 lettre majuscule, 1 lettre minuscule, 1 chiffre et 1 caractère spécial</p>
+            <p v-if="passwordErrorShowSignup">Le mot de passe doit contenir entre 8 et 32 caractères avec au minimum 1 lettre majuscule, 1 lettre minuscule, 1 chiffre et 1 caractère spécial</p>
           </div>
 
           <div class="signup__form__submit">
@@ -92,11 +101,16 @@ regex password encore à configurer-->
         passwordLoginType: "password",
         passwordLoginModel: "",
         passwordLoginIcon: "fa-eye-slash",
+        errorShowLogin: false,
         ShowSignup: false,
+        pseudoSignupModel: "",
+        pseudoErrorShowSignup: "",
         emailSignupModel: "",
+        emailErrorShowSignup: false,
         passwordSignupType: "password",
         passwordSignupModel: "",
-        passwordSignupIcon: "fa-eye-slash"
+        passwordSignupIcon: "fa-eye-slash",
+        passwordErrorShowSignup: false,
       }
     },
     methods: {
@@ -104,102 +118,85 @@ regex password encore à configurer-->
         this.ShowLogin = true;
         this.ShowSignup = false;
       },
-      validEmailLogin(){
-        let RegExpForEmail = new RegExp ("^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$", "g");
-        let test = RegExpForEmail.test(this.emailLoginModel);
-        if (this.emailLoginModel == ""){
-          return false;
-        }
-        if (test){
-          return false;
-        } else {
-          return true;
-        }
-      },
       switchPasswordLoginShow(){
         this.passwordLoginType = this.passwordLoginType === "password" ? "text" : "password";
         this.passwordLoginIcon = this.passwordLoginIcon === "fa-eye-slash" ? "fa-eye" : "fa-eye-slash";
       },
-      validPasswordLogin(){
-        let RegExpForPassword = new RegExp ("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[*.!@$%^&(){}[]:;<>,.?/~_+-=|]){8,32}$");
-        let test = RegExpForPassword.test(this.passwordLoginModel);
-        if (this.passwordLoginModel == ""){
-          return false;
-        }
-        if (test){
-          return false;
-        } else {
-          return true;
-        }
-      },
       orderSubmitLogin(){
         const self = this;
         let user = {
-          email : document.querySelector("#emailLogin").value,
-          password : document.querySelector("#passwordLogin").value,
+          email : this.emailLoginModel,
+          password : this.passwordLoginModel,
         };
-        if (!this.validEmailLogin() && !this.validPasswordLogin()){
-          fetch ("http://localhost:3000/api/users/login", {method: "post", headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}, body: JSON.stringify(user)})
-            .then(function(res){
-              if (res.ok){
-                return res.json();
-              }
-            })
-            .then(function(){
-              self.$router.push({path:"/message"});
-            })
-            .catch(function(error){
-              console.log(error);
-            })
-        }
-      },
-      ShowSignupSwitch(){
-        this.ShowSignup = true;
-        this.ShowLogin = false;
-      },
-      validEmailSignup(){
-        let RegExpForEmail = new RegExp ("^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$", "g");
-        let test = RegExpForEmail.test(this.emailSignupModel);
-        if (this.emailSignupModel == ""){
-          return false;
-        }
-        if (test){
-          return false;
-        } else {
-          return true;
-        }
-      },
-      switchPasswordSignupShow(){
-        this.passwordSignupType = this.passwordSignupType === "password" ? "text" : "password";
-        this.passwordSignupIcon = this.passwordSignupIcon === "fa-eye-slash" ? "fa-eye" : "fa-eye-slash";
-      },
-      validPasswordSignup(){
-        let RegExpForPassword = new RegExp ("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[*.!@$%^&(){}[]:;<>,.?/~_+-=|]).{8,32}$");
-        let test = RegExpForPassword.test(this.passwordSignupModel);
-        if (this.passwordSignupModel == ""){
-          return false;
-        }
-        if (test){
-          return false;
-        } else {
-          return true;
-        }
-      },
-      orderSubmitSignup(){
-        const self = this;
-        let user = {
-          email : document.querySelector("#emailSignup").value,
-          password : document.querySelector("#passwordSignup").value,
-          admin : false
-        };
-        if (!this.validEmailSignup() && !this.validPasswordSignup()){
-          fetch ("http://localhost:3000/api/users/signup", {method: "post", headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}, body: JSON.stringify(user)})
+        console.log(user);
+        fetch ("http://localhost:3000/api/users/login", {method: "post", headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}, body: JSON.stringify(user)})
           .then(function(res){
             if (res.ok){
               return res.json();
             }
           })
-          .then(function(){
+          .then(function(data){
+            user = {
+              id : data.userId,
+              pseudo : data.pseudo,
+              email : data.email,
+              admin : data.admin
+            };
+            sessionStorage.setItem("user", JSON.stringify(user));
+            self.$router.push({path:"/message"});
+          })
+          .catch(function(error){
+            console.log(error);
+            self.errorShowLogin = true;
+          })
+      },
+      ShowSignupSwitch(){
+        this.ShowSignup = true;
+        this.ShowLogin = false;
+      },
+      switchPasswordSignupShow(){
+        this.passwordSignupType = this.passwordSignupType === "password" ? "text" : "password";
+        this.passwordSignupIcon = this.passwordSignupIcon === "fa-eye-slash" ? "fa-eye" : "fa-eye-slash";
+      },
+      orderSubmitSignup(){
+        const self = this;
+        let RegExpForPseudo = new RegExp ("^[a-zA-Z]{3,10}$");
+        let testPseudo = RegExpForPseudo.test(this.pseudoSignupModel);
+        let RegExpForEmail = new RegExp ("^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$", "g");
+        let testEmail = RegExpForEmail.test(this.emailSignupModel);
+        let RegExpForPassword = new RegExp ("^[a-zA-Z0-9!@#|§:;.,?<>$%^&*]{8,32}");
+        let testPassword = RegExpForPassword.test(this.passwordSignupModel);
+        if (!testPseudo){
+          return this.pseudoErrorShowSignup = true;
+        }
+        if (!testEmail){
+          return this.emailErrorShowSignup = true;
+        }
+        if (!testPassword){
+          return this.passwordErrorShowSignup = true;
+        }
+        if (testEmail && testPassword){
+          let User = {
+            pseudo : this.pseudoSignupModel,
+            email : this.emailSignupModel,
+            password : this.passwordSignupModel,
+            admin : false
+          };
+          console.log(User);
+          fetch ("http://localhost:3000/api/users/signup", {method: "post", headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}, body: JSON.stringify(User)})
+          .then(function(res){
+            if (res.ok){
+              return res.json();
+            }
+          })
+          .then(function(data){
+            let user = {
+              id : data.userId,
+              pseudo : self.pseudoSignupModel,
+              email : self.emailSignupModel,
+              admin : false
+            };
+            sessionStorage.setItem("user", JSON.stringify(user));
             self.$router.push({path:"/message"});
           })
           .catch(function(error){
@@ -252,10 +249,10 @@ regex password encore à configurer-->
       }
     }
     .signup{
-      @include form;
+      @include home;
     }
     .login{
-      @include form;
+      @include home;
     }
   }
 </style>

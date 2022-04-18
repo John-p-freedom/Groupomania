@@ -8,16 +8,17 @@ const User = db.users;
 //Signup
 exports.signup = (req, res, next) => {
     bcrypt.hash(req.body.password, 10)
-      .then(hash => {
-        User.create({
-          email: req.body.email,
-          password: hash,
-          admin: false
-        })
-        .then(() => res.status(201).json({ message: 'Utilisateur créé !' }))
-        .catch(error => res.status(400).json({ error }));
+    .then(hash => {
+      User.create({
+        pseudo: req.body.pseudo,
+        email: req.body.email,
+        password: hash,
+        admin: false
       })
-      .catch(error => res.status(500).json({ error }));
+      .then((User) => res.status(201).json({ User }))
+      .catch(error => res.status(400).json({ error }));
+    })
+    .catch(error => res.status(500).json({ error }));
 };
 
 //Login
@@ -34,6 +35,13 @@ exports.login = (req, res, next) => {
             }
             res.status(200).json({
               userId: user.id,
+              pseudo: user.pseudo,
+              email: user.email,
+              admin: user.admin,
+              message_id: user.message_id,
+              comment_id: user.comment_id,
+              like_id: user.like_id,
+              dislike_id: user.dislike_id,
               token: jwt.sign(
                 { userId: user.id },
                 process.env.TOKEN,
@@ -45,6 +53,13 @@ exports.login = (req, res, next) => {
       })
       .catch(error => res.status(500).json({ error }));
 };
+
+//Read All
+exports.getAllUser = (req, res, next) => {
+  db.users.findAll()
+    .then((user) => res.status(200).json(user))
+    .catch((error) => res.status(400).json({ error }));
+}
 
 //Read One
 exports.getOneUser = (req, res, next) => {
