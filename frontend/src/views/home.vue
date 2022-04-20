@@ -1,7 +1,4 @@
-<!--Reste à faire:
-RELOAD PAGE
-hash admin? bonne méthode?
-problème fetch signup: comment récupéré id dans session storage?-->
+<!--Reste à faire: RELOAD PAGE-->
 <template>
   <div>
     <div class="header">
@@ -128,7 +125,6 @@ problème fetch signup: comment récupéré id dans session storage?-->
           email : this.emailLoginModel,
           password : this.passwordLoginModel,
         };
-        console.log(user);
         fetch ("http://localhost:3000/api/users/login", {method: "post", headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}, body: JSON.stringify(user)})
           .then(function(res){
             if (res.ok){
@@ -136,17 +132,11 @@ problème fetch signup: comment récupéré id dans session storage?-->
             }
           })
           .then(function(data){
-            user = {
-              id : data.userId,
-              pseudo : data.pseudo,
-              email : data.email,
-              admin : data.admin
-            };
+            user = data.token;
             sessionStorage.setItem("user", JSON.stringify(user));
             self.$router.push({path:"/message"});
           })
-          .catch(function(error){
-            console.log(error);
+          .catch(function(){
             self.errorShowLogin = true;
           })
       },
@@ -190,12 +180,7 @@ problème fetch signup: comment récupéré id dans session storage?-->
             }
           })
           .then(function(data){
-            let user = {
-              id : data.userId,
-              pseudo : self.pseudoSignupModel,
-              email : self.emailSignupModel,
-              admin : false
-            };
+            let user = data.token;
             sessionStorage.setItem("user", JSON.stringify(user));
             self.$router.push({path:"/message"});
           })

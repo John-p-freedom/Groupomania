@@ -18,15 +18,14 @@ exports.getOneMessage = (req, res, next) => {
 }
 
 //Create
-exports.createMessage = (req, res, next) => {
-  const messageObject = JSON.parse(req.body.message);
-  delete messageObject._id;
-  const message = new Message({
-    ...messageObject
-  });
-  db.messages.save()
-    .then(() => res.status(201).json({ message: 'Message enregistré !'}))
-    .catch((error) => res.status(400).json({ error }));
+exports.createMessage = (userId, message) => {
+  return Message.create({
+    author: message.author,
+    message: message.message,
+    userId: userId,
+  })
+  .then((message) => res.status(201).json({ message }))
+  .catch(error => res.status(400).json({ error }));
 };
 
 //Update

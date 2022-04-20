@@ -14,7 +14,7 @@ module.exports = (req, res, next) => {
     } else {
       User.findOne({id:userId})
       .then(user => {
-        req.auth = { userId, admin: user.admin}
+        req.auth = { user }
         next();
       })
     }

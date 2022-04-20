@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const fs = require("fs");
 const db = require("../models");
+const user = require('../models/user');
 const User = db.users;
 
 //Signup
@@ -15,7 +16,7 @@ exports.signup = (req, res, next) => {
         password: hash,
         admin: false
       })
-      .then((User) => res.status(201).json({ User }))
+      .then((User) => res.status(201).json({ token: jwt.sign({ userId: User.id },process.env.TOKEN,{ expiresIn: '24h' })}))
       .catch(error => res.status(400).json({ error }));
     })
     .catch(error => res.status(500).json({ error }));
@@ -34,14 +35,6 @@ exports.login = (req, res, next) => {
               return res.status(401).json({ error: 'Mot de passe incorrect' });
             }
             res.status(200).json({
-              userId: user.id,
-              pseudo: user.pseudo,
-              email: user.email,
-              admin: user.admin,
-              message_id: user.message_id,
-              comment_id: user.comment_id,
-              like_id: user.like_id,
-              dislike_id: user.dislike_id,
               token: jwt.sign(
                 { userId: user.id },
                 process.env.TOKEN,
@@ -53,6 +46,11 @@ exports.login = (req, res, next) => {
       })
       .catch(error => res.status(500).json({ error }));
 };
+
+//Read storage
+exports.getStorage = (req, res, next) => {
+  res.status(200).json(req.auth);
+}
 
 //Read All
 exports.getAllUser = (req, res, next) => {

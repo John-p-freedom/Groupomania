@@ -20,8 +20,6 @@ paramétrer like, dislike et commentaires-->
                     <p>{{msg.message}}</p>
                 </div>
 
-                <div class="messages__line"></div>
-
                 <div class="messages__foot">
                     <span class="messages__foot__txt">
                         <p>Modifier</p>
@@ -40,25 +38,48 @@ paramétrer like, dislike et commentaires-->
             <i i class="fa-solid fa-message fa-3x" title="Écrire un nouveau message"></i>
         </div>
 
-        <section id="newMessage" v-if="showNewMessage">
-            <NewMessageView/>
+        <section id="new" v-if="showNewMessage">
+            <div class="newMessage">
+                <div class="newMessage__head">
+                    <p>Message écrit par <strong>{{user.pseudo}}</strong> :</p>
+                </div>
+
+                <div class="message__body">
+                    <textarea 
+                        type="text" 
+                        size="50" 
+                        v-model="newMessageText" 
+                        pattern="^[a-z A-Z 0-9 à-ÿ ()',?;.:=!%¨^$*+-/#@°]$" 
+                        rows="5" 
+                        cols="50" 
+                        autofocus>
+                    </textarea>
+                </div>
+
+                <div class="message__line"></div>
+
+                <div class="message__foot">
+                    <button @click.prevent="newMessage">Annuler</button>
+                    <button @click.prevent="submitNewMessage">Envoyer</button>
+                </div>
+            </div>
         </section>
     </span>
 </template>
 
 <script>
 import HeaderView from '@/components/header.vue'
-import NewMessageView from '@/components/newMessage.vue'
 export default {
     name: "#viewsComponents",
     components:{
-        HeaderView,
-        NewMessageView
+        HeaderView
     },
     data: function (){
         return {
             msgs: null,
-            showNewMessage: false
+            showNewMessage: false,
+            user:"",
+            newMessageText: "",
         };
     },
     methods:{
@@ -78,11 +99,33 @@ export default {
                 })
         },
         newMessage(){
-            this.showNewMessage = true;
-        }
+            if (!this.showNewMessage){
+                this.showNewMessage = true;
+            } else {
+                this.showNewMessage = false;
+            }
+        },
+        getStorage(){
+        const token = JSON.parse(sessionStorage.getItem("user"));
+        const self = this;
+        fetch (`http://localhost:3000/api/users/profile`, { headers: new Headers({'Authorization': 'Bearer '+token})}) 
+            .then(function(res){
+                if (res.ok){
+                    return res.json();
+                }
+            })
+            .then(function(user){
+                console.log(user);
+                self.user = user;
+            })
+            .catch(function(err){
+                console.error(err);
+            })
+        },
     },
     mounted(){
         this.showMessages();
+        this.getStorage();
     }
 }
 </script>
@@ -154,6 +197,29 @@ export default {
         .fa-message{
             color: map-get($color,fond_blue);
             cursor: pointer;
+        }
+    }
+     #new{
+        display: flex;
+        justify-content: center;
+        margin-top: 60px;
+        font-size: 16px;
+        .message{
+            border: 3px solid map-get($color, fond_orange);
+            background-color: white;
+            width: 50%;
+            &__head{
+                text-align: left;
+                strong{
+                    font-weight: bold;
+                }
+            }
+            &__foot{
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                height: 35px;
+            }
         }
     }
 </style>

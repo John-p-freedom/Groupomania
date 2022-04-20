@@ -38,6 +38,7 @@
           <label for="password">Afin de valider le(s) changement(s) ou supprimer votre compte, veuillez inscrire votre mot de passe actuel : </label>
           <input :type="passwordType" v-model="passwordModel" name="password" id="password" size="25" maxlength="50" required>
           <i @click="switchPasswordShow" class="fa-solid" :class="passwordIcon"></i>
+          <p v-if="passwordErrorShow">Le mot de passe inscrit ne correspond pas au mot de passe enregistré dans la base de donnée</p>
         </div>
       </div>
 
@@ -75,11 +76,26 @@ export default {
         passwordType: "password",
         passwordModel: "",
         passwordIcon: "fa-eye-slash",
+        passwordErrorShow: ""
     };
   },
   methods: {
       getStorage(){
-          this.user = JSON.parse(sessionStorage.getItem("user"));
+        const token = JSON.parse(sessionStorage.getItem("user"));
+        const self = this;
+        fetch (`http://localhost:3000/api/users/profile`, { headers: new Headers({'Authorization': 'Bearer '+token})}) 
+          .then(function(res){
+              if (res.ok){
+                  return res.json();
+              }
+          })
+          .then(function(user){
+              console.log(user);
+              self.user = user;
+          })
+          .catch(function(err){
+              console.error(err);
+          })
       },
       switchNewPasswordShow(){
         this.newPasswordType = this.newPasswordType === "password" ? "text" : "password";
@@ -97,13 +113,13 @@ export default {
         let RegExpForPassword = new RegExp ("^[a-zA-Z0-9!@#|§:;.,?<>$%^&*]{8,32}");
         let testPassword = RegExpForPassword.test(this.newPasswordModel);
         if (!testPseudo){
-          return this.pseudoErrorShowSignup = true;
+          return this.newPseudoErrorShow = true;
         }
         if (!testEmail){
-          return this.emailErrorShowSignup = true;
+          return this.newEmailErrorShow = true;
         }
         if (!testPassword){
-          return this.passwordErrorShowSignup = true;
+          return this.newPasswordErrorShow = true;
         }
       }
   },
