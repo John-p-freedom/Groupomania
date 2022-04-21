@@ -1,5 +1,4 @@
 <!--Reste à faire:
-RELOAD PAGE
 gérer modification user-->
 <template>
 <span id="viewsComponents">
@@ -149,6 +148,7 @@ export default {
           }
         })
         .then(function(){
+          sessionStorage.removeItem("user");
           self.$router.push({path:"/"});
         })
         .catch(function(err){
@@ -157,7 +157,17 @@ export default {
     }
   },
   mounted(){
-      this.getStorage();
+    this.getStorage();
+    (() => {
+      if (window.localStorage) {
+        if (!localStorage.getItem('reload')) {
+          localStorage['reload'] = true;
+          window.location.reload();
+        } else {
+          localStorage.removeItem('reload');
+        }
+      }
+    })();
   }
 }
 </script>

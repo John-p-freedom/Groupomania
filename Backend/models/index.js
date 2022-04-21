@@ -16,7 +16,7 @@ db.messages = require("./message.js")(sequelize, Sequelize);
 db.comments = require("./comment.js")(sequelize, Sequelize);
 
 db.users.hasMany(db.messages, { as: "messages" });
-db.messages.belongsTo(db.users, {foreignKey: "usersId",as: "users",});
+db.messages.belongsTo(db.users, {foreignKey: "userId",as: "users",});
 
 //db.users.hasMany(db.comments, { as: "comments" });
 //db.comments.belongsTo(db.users, {foreignKey: "usersId",as: "users",});

@@ -1,5 +1,4 @@
 <!--Reste à faire:
-RELOAD PAGE
 paramétrer une erreur si non authentifié
 Configurer section new pour nouveau message
 "bouton" modifier et supprimer à afficher ou non en fonction de admin et user
@@ -134,14 +133,15 @@ export default {
                 message : this.newMessageModel,
                 userId : this.userId
             }
-            fetch (`http://localhost:3000/api/messages/new`, {method: "post", headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}, body: JSON.stringify(message)})
+            const token = JSON.parse(sessionStorage.getItem("user"));
+            fetch (`http://localhost:3000/api/messages/new`, {method: "post", headers: {'Accept': 'application/json', 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`}, body: JSON.stringify(message)})
                 .then(function(res){
                     if (res.ok){
                         return res.json();
                     }
                 })
                 .then(function(){
-                    location.reload();
+                    //location.reload();
                 })
                 .catch(function(err){
                     console.log(err);
@@ -151,6 +151,16 @@ export default {
     mounted(){
         this.showMessages();
         this.getStorage();
+        (() => {
+            if (window.localStorage) {
+                if (!localStorage.getItem('reload')) {
+                    localStorage['reload'] = true;
+                    window.location.reload();
+                } else {
+                    localStorage.removeItem('reload');
+                }
+            }
+        })();
     }
 }
 </script>

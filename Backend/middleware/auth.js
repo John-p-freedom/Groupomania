@@ -1,9 +1,7 @@
-//Import
 const jwt = require('jsonwebtoken');
 const db = require("../models");
 const User = db.users;
 
-//Auth
 module.exports = (req, res, next) => {
   try {
     const token = req.headers.authorization.split(' ')[1];

@@ -2,13 +2,15 @@ const db = require("../models");
 const Message = db.messages;
 
 exports.createMessage = (message) => {
+  console.log(message);
   Message.create({
     author: message.author,
     message: message.message,
     userId: message.userId,
   })
+  console.log(Message)
   .then((message) => res.status(201).json({ message }))
-  .catch(error => res.status(400).json({ error }));
+  .catch((error) => res.status(400).json({ error }));
 };
 
 exports.getAllMessage = (req, res, next) => {
