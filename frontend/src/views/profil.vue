@@ -4,7 +4,7 @@
         <HeaderView/>
     </section>
 
-    <section class="profil" id="profil">
+    <section class="profil" id="profil" v-for="user in users" :key="user">
       <div class="profil__title">
         <h1>Profil de {{user.pseudo}}</h1>
         <h4 v-if="user.admin">Compte administateur</h4>
@@ -44,11 +44,11 @@
 
       <div class="profil__submit">
         <div class="profil__submit__modify">
-          <button @click.prevent="modifyProfil">Valider les modifications</button>
+          <button @click.prevent="modifyProfile()">Valider les modifications</button>
         </div>
 
         <div class="profil__submit__delete">
-          <button @click.prevent="deleteProfil">Supprimer votre compte</button>
+          <button @click.prevent="deleteProfile()">Supprimer votre compte</button>
         </div>
       </div>
     </section>
@@ -64,7 +64,7 @@ export default {
   },
   data: function (){
     return {
-        user:"",
+        users:"",
         newPseudoModel: "",
         newPseudoErrorShow: "",
         newEmailModel: "",
@@ -76,52 +76,83 @@ export default {
         passwordType: "password",
         passwordModel: "",
         passwordIcon: "fa-eye-slash",
-        passwordErrorShow: ""
+        passwordErrorShow: false,
+        userId: ""
     };
   },
   methods: {
-      getStorage(){
-        const token = JSON.parse(sessionStorage.getItem("user"));
-        const self = this;
-        fetch (`http://localhost:3000/api/users/profile`, { headers: new Headers({'Authorization': 'Bearer '+token})}) 
-          .then(function(res){
-              if (res.ok){
-                  return res.json();
-              }
-          })
-          .then(function(user){
-              console.log(user);
-              self.user = user;
-          })
-          .catch(function(err){
-              console.error(err);
-          })
-      },
-      switchNewPasswordShow(){
-        this.newPasswordType = this.newPasswordType === "password" ? "text" : "password";
-        this.newPasswordIcon = this.newPasswordIcon === "fa-eye-slash" ? "fa-eye" : "fa-eye-slash";
-      },
-      switchPasswordShow(){
-        this.passwordType = this.passwordType === "password" ? "text" : "password";
-        this.passwordIcon = this.passwordIcon === "fa-eye-slash" ? "fa-eye" : "fa-eye-slash";
-      },
-      orderSubmit(){
-        let RegExpForPseudo = new RegExp ("^[a-zA-Z]{3,10}$");
-        let testPseudo = RegExpForPseudo.test(this.newPseudoModel);
-        let RegExpForEmail = new RegExp ("^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$", "g");
-        let testEmail = RegExpForEmail.test(this.newEmailModel);
-        let RegExpForPassword = new RegExp ("^[a-zA-Z0-9!@#|§:;.,?<>$%^&*]{8,32}");
-        let testPassword = RegExpForPassword.test(this.newPasswordModel);
-        if (!testPseudo){
-          return this.newPseudoErrorShow = true;
-        }
-        if (!testEmail){
-          return this.newEmailErrorShow = true;
-        }
-        if (!testPassword){
-          return this.newPasswordErrorShow = true;
-        }
+    getStorage(){
+      const token = JSON.parse(sessionStorage.getItem("user"));
+      const self = this;
+      fetch (`http://localhost:3000/api/users/storage`, { headers: new Headers({'Authorization': 'Bearer '+token})}) 
+        .then(function(res){
+            if (res.ok){
+                return res.json();
+            }
+        })
+        .then(function(userValues){
+            self.users = userValues;
+            self.userId = userValues.user.id;
+        })
+        .catch(function(err){
+            console.error(err);
+        })
+    },
+    switchNewPasswordShow(){
+      this.newPasswordType = this.newPasswordType === "password" ? "text" : "password";
+      this.newPasswordIcon = this.newPasswordIcon === "fa-eye-slash" ? "fa-eye" : "fa-eye-slash";
+    },
+    switchPasswordShow(){
+      this.passwordType = this.passwordType === "password" ? "text" : "password";
+      this.passwordIcon = this.passwordIcon === "fa-eye-slash" ? "fa-eye" : "fa-eye-slash";
+    },
+    modifyProfile(){
+      let RegExpForPseudo = new RegExp ("^[a-zA-Z]{3,10}$");
+      let testPseudo = RegExpForPseudo.test(this.newPseudoModel);
+      let RegExpForEmail = new RegExp ("^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$", "g");
+      let testEmail = RegExpForEmail.test(this.newEmailModel);
+      let RegExpForPassword = new RegExp ("^[a-zA-Z0-9!@#|§:;.,?<>$%^&*]{8,32}");
+      let testPassword = RegExpForPassword.test(this.newPasswordModel);
+      if (this.newPseudoModel == "" && this.newEmailModel == "" && this.newPasswordModel == ""){
+        alert("Veuillez inscrire vos modifications avant de valider")
       }
+      if (!testPseudo && this.newPseudoModel != ""){ 
+        this.newPseudoErrorShow = true;
+      }
+      if (!testEmail && this.newEmailModel != ""){
+        return this.newEmailErrorShow = true;
+      }
+      if (!testPassword && this.newPasswordModel != ""){
+        return this.newPasswordErrorShow = true;
+      }
+      /*fetch (`http://localhost:3000/api/users/${this.userId}`, {method: "put", headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}, body: JSON.stringify(user)})
+        .then(function(res){
+          if (res.ok){
+            return res.json();
+          }
+        })
+        .then(function(){
+          location.reload();
+        })
+        .catch(function(err){
+          console.log(err);
+        });*/
+    },
+    deleteProfile(){
+      const self = this;
+      fetch (`http://localhost:3000/api/users/${self.userId}`, {method: "delete", headers: {'Accept': 'application/json'}})
+        .then(function(res){
+          if (res.ok){
+            return res.json();
+          }
+        })
+        .then(function(){
+          self.$router.push({path:"/"});
+        })
+        .catch(function(err){
+          console.log(err);
+        });
+    }
   },
   mounted(){
       this.getStorage();

@@ -1,4 +1,3 @@
-//Import
 const express = require('express');
 const helmet = require('helmet');
 require('dotenv').config()
@@ -7,14 +6,11 @@ db.sequelize.sync({ force: false }).then(() => {
     console.log("Drop and re-sync db.");
 });
 
-
-//Routes
 const userRoutes = require('./routes/user');
 const messageRoutes = require('./routes/message');
 const commentRoutes = require('./routes/comment');
 //const likeRoutes = require('./routes/like');
 
-//Écoute
 const app = express();
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -23,7 +19,6 @@ app.use((req, res, next) => {
     next();
 });
 
-//Middlewares
 app.use(express.json());
 app.use(helmet({crossOriginResourcePolicy: false,}));
 app.use('/api/users', userRoutes);
@@ -31,5 +26,4 @@ app.use('/api/messages', messageRoutes);
 app.use('/api/comments', commentRoutes);
 //app.use('/api/likes', likeRoutes);
 
-//Export
 module.exports = app;

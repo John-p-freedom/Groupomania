@@ -172,7 +172,6 @@
             password : this.passwordSignupModel,
             admin : false
           };
-          console.log(User);
           fetch ("http://localhost:3000/api/users/signup", {method: "post", headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}, body: JSON.stringify(User)})
           .then(function(res){
             if (res.ok){

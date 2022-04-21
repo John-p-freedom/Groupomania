@@ -1,4 +1,3 @@
-//Schéma
 module.exports = (sequelize, Data) =>{
   const User = sequelize.define('user',{
     pseudo: { type: Data.STRING, allowNull: false},

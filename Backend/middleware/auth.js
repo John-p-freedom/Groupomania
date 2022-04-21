@@ -12,7 +12,7 @@ module.exports = (req, res, next) => {
     if (req.body.userId && req.body.userId !== userId) {
       throw 'User ID invalide';
     } else {
-      User.findOne({id:userId})
+      User.findOne({where: {id: userId}})
       .then(user => {
         req.auth = { user }
         next();

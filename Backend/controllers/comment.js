@@ -1,9 +1,7 @@
-//Import
 const Comment = require('../models/comment');
 const db = require("../models/index");
 const fs = require('fs');
 
-//Read All
 exports.getAllComment = (req, res, next) => {
   db.comments.find()
     .then((comment) => res.status(200).json(comment))
@@ -12,7 +10,7 @@ exports.getAllComment = (req, res, next) => {
 
 //Read One
 exports.getOneComment = (req, res, next) => {
-  db.comments.findOne({ _id: req.params.id })
+  db.comments.findOne({where:{ _id: req.params.id }})
     .then((comment) => res.status(200).json(comment))
     .catch((error) => res.status(404).json({ error }));
 }
@@ -31,7 +29,7 @@ exports.createComment = (req, res, next) => {
 
 //Update
 exports.modifyComment = (req, res, next) => {
-  db.comments.findOne({ _id: req.params.id })
+  db.comments.findOne({where:{ _id: req.params.id }})
     .then((comment) => {
       if (comment.userId !== req.auth.userId) {
         res.status(403).json({ error: "Requête non autorisée" });
@@ -40,7 +38,7 @@ exports.modifyComment = (req, res, next) => {
           {
             ...JSON.parse(req.body.comment),
           } : { ...req.body };
-      db.comments.updateOne({ _id: req.params.id }, { ...commentObject, _id: req.params.id })
+      db.comments.updateOne({where:{ _id: req.params.id }}, { ...commentObject, _id: req.params.id })
         .then(() => res.status(200).json({ comment: "Comment modifiée." }))
         .catch((error) => res.status(400).json({ error }));
   })
@@ -49,12 +47,12 @@ exports.modifyComment = (req, res, next) => {
 
 //Delete
 exports.deleteComment = (req, res, next) => {
-  db.comments.findOne({ _id: req.params.id })
+  db.comments.findOne({where:{ _id: req.params.id }})
     .then((comment) => {
       if (comment.userId !== req.auth.userId) {
         res.status(403).json({ error: "Requête non autorisé" });
       }
-      db.comments.deleteOne({ _id: req.params.id })
+      db.comments.deleteOne({where:{ _id: req.params.id }})
       .then(() => res.status(200).json({ comment: "Comment supprimé !" }))
       .catch((error) => res.status(400).json({ error }));
     })

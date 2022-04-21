@@ -20,15 +20,17 @@ paramétrer like, dislike et commentaires-->
                     <p>{{msg.message}}</p>
                 </div>
 
+                <div class="messages__line"></div>
+
                 <div class="messages__foot">
-                    <span class="messages__foot__txt">
-                        <p>Modifier</p>
-                        <p>Supprimer</p>
+                    <span class="messages__foot__txt" v-for="user in users" :key="user">
+                        <p v-if="user.admin || user.id == msg.userID">Modifier</p>
+                        <p v-if="user.admin || user.id == msg.userID">Supprimer</p>
                     </span>
                     <span class="messages__foot__icons">
-                        <i class="fa-solid fa-thumbs-up fa-xl" title="J'aime"></i>
-                        <i class="fa-solid fa-thumbs-down fa-xl" title="Je n'aime pas"></i>
-                        <i class="fa-solid fa-comments fa-xl" title="Écrire un commentaire"></i>
+                        <i class="fa-solid fa-thumbs-up fa-xl" title="J'aime"></i><p v-if="nbrLikes >= 1">({{nbrLikes}})</p>
+                        <i class="fa-solid fa-thumbs-down fa-xl" title="Je n'aime pas"></i><p v-if="nbrDislikes >= 1">({{nbrDislikes}})</p>
+                        <i class="fa-solid fa-comments fa-xl" title="Écrire un commentaire"></i><p v-if="nbrComments >= 1">({{nbrComments}})</p>
                     </span>
                 </div>
             </div>
@@ -41,26 +43,24 @@ paramétrer like, dislike et commentaires-->
         <section id="new" v-if="showNewMessage">
             <div class="newMessage">
                 <div class="newMessage__head">
-                    <p>Message écrit par <strong>{{user.pseudo}}</strong> :</p>
+                    <p>Nouveau message :</p>
                 </div>
 
                 <div class="message__body">
                     <textarea 
                         type="text" 
                         size="50" 
-                        v-model="newMessageText" 
+                        v-model="newMessageModel" 
                         pattern="^[a-z A-Z 0-9 à-ÿ ()',?;.:=!%¨^$*+-/#@°]$" 
-                        rows="5" 
-                        cols="50" 
+                        rows="7" 
+                        cols="93" 
                         autofocus>
                     </textarea>
                 </div>
 
-                <div class="message__line"></div>
-
                 <div class="message__foot">
-                    <button @click.prevent="newMessage">Annuler</button>
-                    <button @click.prevent="submitNewMessage">Envoyer</button>
+                    <button class="message__foot__button" @click.prevent="newMessage">Annuler</button>
+                    <button class="message__foot__button" @click.prevent="submitNewMessage()">Envoyer</button>
                 </div>
             </div>
         </section>
@@ -77,9 +77,12 @@ export default {
     data: function (){
         return {
             msgs: null,
+            nbrLikes: "",
+            nbrDislikes: "",
+            nbrComments: "",
             showNewMessage: false,
-            user:"",
-            newMessageText: "",
+            users:"",
+            newMessageModel: "",
         };
     },
     methods:{
@@ -105,18 +108,35 @@ export default {
                 this.showNewMessage = false;
             }
         },
+        submitNewMessage(){
+            let message = {
+                author : this.user.pseudo,
+                message : this.newMessageModel
+            }
+            fetch (`http://localhost:3000/api/messages/new`, {method: "post", headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}, body: JSON.stringify(message)})
+                .then(function(res){
+                    if (res.ok){
+                        return res.json();
+                    }
+                })
+                .then(function(){
+                    location.reload();
+                })
+                .catch(function(err){
+                    console.log(err);
+                });
+        },
         getStorage(){
         const token = JSON.parse(sessionStorage.getItem("user"));
         const self = this;
-        fetch (`http://localhost:3000/api/users/profile`, { headers: new Headers({'Authorization': 'Bearer '+token})}) 
+        fetch (`http://localhost:3000/api/users/storage`, { headers: new Headers({'Authorization': 'Bearer '+token})}) 
             .then(function(res){
                 if (res.ok){
                     return res.json();
                 }
             })
             .then(function(user){
-                console.log(user);
-                self.user = user;
+                self.users = user;
             })
             .catch(function(err){
                 console.error(err);
@@ -173,16 +193,34 @@ export default {
                     .fa-thumbs-up{
                         color: green;
                         cursor: pointer;
+                        transform: scale(1);
+                        transition-property: transform;
+                        transition-duration: 400ms;
+                        &:hover{
+                            transform: scale(1.25);
+                        }
                     }
                     .fa-thumbs-down{
                         color: red;
                         margin-left: 15px;
                         cursor: pointer;
+                        transform: scale(1);
+                        transition-property: transform;
+                        transition-duration: 400ms;
+                        &:hover{
+                            transform: scale(1.25);
+                        }
                     }
                     .fa-comments{
                         color: blue;
                         margin-left: 15px;
                         cursor: pointer;
+                        transform: scale(1);
+                        transition-property: transform;
+                        transition-duration: 400ms;
+                        &:hover{
+                            transform: scale(1.25);
+                        }
                     }
                 }
             }
@@ -217,8 +255,21 @@ export default {
             &__foot{
                 display: flex;
                 justify-content: space-between;
-                align-items: center;
-                height: 35px;
+                margin: 10px 0;
+                &__button{
+                    background-color: map-get($color, txt_blue);
+                    border-radius: 50px;
+                    color: white;
+                    font-weight: bold;
+                    padding: 5px 15px;
+                    cursor: pointer;
+                    transform: scale(1);
+                    transition-property: transform;
+                    transition-duration: 400ms;
+                    &:hover {
+                        transform: scale(1.25);
+                    }
+                }
             }
         }
     }
