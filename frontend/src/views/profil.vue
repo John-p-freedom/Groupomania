@@ -1,3 +1,6 @@
+<!--Reste à faire:
+RELOAD PAGE
+gérer modification user-->
 <template>
 <span id="viewsComponents">
     <section id="header">
@@ -34,12 +37,6 @@
           <p v-if="newPasswordErrorShow">Le mot de passe doit contenir entre 8 et 32 caractères avec au minimum 1 lettre majuscule, 1 lettre minuscule, 1 chiffre et 1 caractère spécial</p>
         </div>
 
-        <div class="profil__change__valid">
-          <label for="password">Afin de valider le(s) changement(s) ou supprimer votre compte, veuillez inscrire votre mot de passe actuel : </label>
-          <input :type="passwordType" v-model="passwordModel" name="password" id="password" size="25" maxlength="50" required>
-          <i @click="switchPasswordShow" class="fa-solid" :class="passwordIcon"></i>
-          <p v-if="passwordErrorShow">Le mot de passe inscrit ne correspond pas au mot de passe enregistré dans la base de donnée</p>
-        </div>
       </div>
 
       <div class="profil__submit">
@@ -73,10 +70,6 @@ export default {
         newPasswordModel: "",
         newPasswordIcon: "fa-eye-slash",
         newPasswordErrorShow: false,
-        passwordType: "password",
-        passwordModel: "",
-        passwordIcon: "fa-eye-slash",
-        passwordErrorShow: false,
         userId: ""
     };
   },
@@ -102,10 +95,6 @@ export default {
       this.newPasswordType = this.newPasswordType === "password" ? "text" : "password";
       this.newPasswordIcon = this.newPasswordIcon === "fa-eye-slash" ? "fa-eye" : "fa-eye-slash";
     },
-    switchPasswordShow(){
-      this.passwordType = this.passwordType === "password" ? "text" : "password";
-      this.passwordIcon = this.passwordIcon === "fa-eye-slash" ? "fa-eye" : "fa-eye-slash";
-    },
     modifyProfile(){
       let RegExpForPseudo = new RegExp ("^[a-zA-Z]{3,10}$");
       let testPseudo = RegExpForPseudo.test(this.newPseudoModel);
@@ -116,16 +105,28 @@ export default {
       if (this.newPseudoModel == "" && this.newEmailModel == "" && this.newPasswordModel == ""){
         alert("Veuillez inscrire vos modifications avant de valider")
       }
+      //let user = {};
       if (!testPseudo && this.newPseudoModel != ""){ 
         this.newPseudoErrorShow = true;
-      }
+      } else if (testPseudo){
+        this.newPseudoErrorShow = false;
+        //user = {pseudo : this.newPseudoModel};
+      } 
       if (!testEmail && this.newEmailModel != ""){
-        return this.newEmailErrorShow = true;
+        this.newEmailErrorShow = true;
+      } else if (testEmail){
+        this.newEmailErrorShow = false;
+        //user = {email : this.newEmailModel};
       }
       if (!testPassword && this.newPasswordModel != ""){
-        return this.newPasswordErrorShow = true;
+        this.newPasswordErrorShow = true;
+      } else if (testPassword){
+        this.newPasswordErrorShow = false;
+        //user = {password : this.newPasswordModel};
       }
-      /*fetch (`http://localhost:3000/api/users/${this.userId}`, {method: "put", headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}, body: JSON.stringify(user)})
+      /*const token = JSON.parse(sessionStorage.getItem("user"));
+      const self = this;
+      fetch (`http://localhost:3000/api/users/${self.userId}`, {method: "put", headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}, body: JSON.stringify(user)})
         .then(function(res){
           if (res.ok){
             return res.json();
@@ -139,8 +140,9 @@ export default {
         });*/
     },
     deleteProfile(){
+      const token = JSON.parse(sessionStorage.getItem("user"));
       const self = this;
-      fetch (`http://localhost:3000/api/users/${self.userId}`, {method: "delete", headers: {'Accept': 'application/json'}})
+      fetch (`http://localhost:3000/api/users/${self.userId}`, {method: "delete", headers: {'Accept': 'application/json', 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`}})
         .then(function(res){
           if (res.ok){
             return res.json();

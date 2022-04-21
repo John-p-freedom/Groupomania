@@ -24,8 +24,8 @@ paramétrer like, dislike et commentaires-->
 
                 <div class="messages__foot">
                     <span class="messages__foot__txt" v-for="user in users" :key="user">
-                        <p v-if="user.admin || user.id == msg.userID">Modifier</p>
-                        <p v-if="user.admin || user.id == msg.userID">Supprimer</p>
+                        <p v-if="user.admin || user.id == msg.userId">Modifier</p>
+                        <p v-if="user.admin || user.id == msg.userId">Supprimer</p>
                     </span>
                     <span class="messages__foot__icons">
                         <i class="fa-solid fa-thumbs-up fa-xl" title="J'aime"></i><p v-if="nbrLikes >= 1">({{nbrLikes}})</p>
@@ -82,6 +82,8 @@ export default {
             nbrComments: "",
             showNewMessage: false,
             users:"",
+            userPseudo: "",
+            userId: "",
             newMessageModel: "",
         };
     },
@@ -101,6 +103,24 @@ export default {
                     console.error(err);
                 })
         },
+        getStorage(){
+        const token = JSON.parse(sessionStorage.getItem("user"));
+        const self = this;
+        fetch (`http://localhost:3000/api/users/storage`, { headers: new Headers({'Authorization': 'Bearer '+token})}) 
+            .then(function(res){
+                if (res.ok){
+                    return res.json();
+                }
+            })
+            .then(function(userValues){
+                self.users = userValues;
+                self.userPseudo = userValues.user.pseudo;
+                self.userId = userValues.user.id;
+            })
+            .catch(function(err){
+                console.error(err);
+            })
+        },
         newMessage(){
             if (!this.showNewMessage){
                 this.showNewMessage = true;
@@ -110,8 +130,9 @@ export default {
         },
         submitNewMessage(){
             let message = {
-                author : this.user.pseudo,
-                message : this.newMessageModel
+                author : this.userPseudo,
+                message : this.newMessageModel,
+                userId : this.userId
             }
             fetch (`http://localhost:3000/api/messages/new`, {method: "post", headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}, body: JSON.stringify(message)})
                 .then(function(res){
@@ -125,22 +146,6 @@ export default {
                 .catch(function(err){
                     console.log(err);
                 });
-        },
-        getStorage(){
-        const token = JSON.parse(sessionStorage.getItem("user"));
-        const self = this;
-        fetch (`http://localhost:3000/api/users/storage`, { headers: new Headers({'Authorization': 'Bearer '+token})}) 
-            .then(function(res){
-                if (res.ok){
-                    return res.json();
-                }
-            })
-            .then(function(user){
-                self.users = user;
-            })
-            .catch(function(err){
-                console.error(err);
-            })
         },
     },
     mounted(){
