@@ -104,26 +104,25 @@ export default {
       if (this.newPseudoModel == "" && this.newEmailModel == "" && this.newPasswordModel == ""){
         alert("Veuillez inscrire vos modifications avant de valider")
       }
-      //let user = {};
+      let user = {};
       if (!testPseudo && this.newPseudoModel != ""){ 
         this.newPseudoErrorShow = true;
       } else if (testPseudo){
         this.newPseudoErrorShow = false;
-        //user = {pseudo : this.newPseudoModel};
+        user = {pseudo : this.newPseudoModel};
       } 
       if (!testEmail && this.newEmailModel != ""){
         this.newEmailErrorShow = true;
       } else if (testEmail){
         this.newEmailErrorShow = false;
-        //user = {email : this.newEmailModel};
+        user = {email : this.newEmailModel};
       }
       if (!testPassword && this.newPasswordModel != ""){
         this.newPasswordErrorShow = true;
       } else if (testPassword){
         this.newPasswordErrorShow = false;
-        //user = {password : this.newPasswordModel};
+        user = {password : this.newPasswordModel};
       }
-      /*const token = JSON.parse(sessionStorage.getItem("user"));
       const self = this;
       fetch (`http://localhost:3000/api/users/${self.userId}`, {method: "put", headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}, body: JSON.stringify(user)})
         .then(function(res){
@@ -132,11 +131,11 @@ export default {
           }
         })
         .then(function(){
-          location.reload();
+          //location.reload();
         })
         .catch(function(err){
           console.log(err);
-        });*/
+        });
     },
     deleteProfile(){
       const token = JSON.parse(sessionStorage.getItem("user"));

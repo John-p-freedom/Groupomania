@@ -18,11 +18,11 @@ db.comments = require("./comment.js")(sequelize, Sequelize);
 db.users.hasMany(db.messages, { as: "messages" });
 db.messages.belongsTo(db.users, {foreignKey: "userId",as: "users",});
 
-//db.users.hasMany(db.comments, { as: "comments" });
-//db.comments.belongsTo(db.users, {foreignKey: "usersId",as: "users",});
+db.users.hasMany(db.comments, { as: "comments" });
+db.comments.belongsTo(db.users, {foreignKey: "userId",as: "users",});
 
-//db.messages.hasMany(db.comments, { as: "comments" });
-//db.comments.belongsTo(db.messages, {foreignKey: "messagesId",as: "messages",});
+db.messages.hasMany(db.comments, { as: "comments" });
+db.comments.belongsTo(db.messages, {foreignKey: "messageId",as: "messages",});
 
 
 //Export

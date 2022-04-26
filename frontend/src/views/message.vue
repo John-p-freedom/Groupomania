@@ -1,8 +1,3 @@
-<!--Reste à faire:
-paramétrer une erreur si non authentifié
-Configurer section new pour nouveau message
-"bouton" modifier et supprimer à afficher ou non en fonction de admin et user
-paramétrer like, dislike et commentaires-->
 <template>
     <span id="viewsComponents">
         <section id="header">
@@ -27,10 +22,42 @@ paramétrer like, dislike et commentaires-->
                         <p v-if="user.admin || user.id == msg.userId">Supprimer</p>
                     </span>
                     <span class="messages__foot__icons">
-                        <i class="fa-solid fa-thumbs-up fa-xl" title="J'aime"></i><p v-if="nbrLikes >= 1">({{nbrLikes}})</p>
-                        <i class="fa-solid fa-thumbs-down fa-xl" title="Je n'aime pas"></i><p v-if="nbrDislikes >= 1">({{nbrDislikes}})</p>
-                        <i class="fa-solid fa-comments fa-xl" title="Écrire un commentaire"></i><p v-if="nbrComments >= 1">({{nbrComments}})</p>
+                        <i class="fa-solid fa-thumbs-up fa-xl" title="J'aime"></i>
+                        <p v-if="nbrLikes >= 1">({{nbrLikes}})</p>
+                        <i class="fa-solid fa-thumbs-down fa-xl" title="Je n'aime pas"></i>
+                        <p v-if="nbrDislikes >= 1">({{nbrDislikes}})</p>
+                        <i class="fa-solid fa-comments fa-xl" title="Écrire un commentaire" @click.prevent="viewComment"></i>
+                        <span v-for="com in coms" :key="com">
+                            <p v-if="msg.id == com.messageId">({{coms.length}})</p>
+                        </span>
                     </span>
+                </div>
+            </div>
+
+            <div class="comments" v-if="showComment">
+                <div class="comments__view" v-for="com in coms" :key="com">
+                    <div class="comments__view__condition" v-if="msg.id == com.messageId">
+                        <div class="comments__view__condition__head">
+                            <p>Commentaire écrit par <strong>{{com.author}}</strong> :</p>
+                        </div>
+
+                        <div class="comments__view__condition__body">
+                            <p>{{com.comment}}</p>
+                        </div>
+
+                        <div class="comments__view__condition__foot" v-for="user in users" :key="user">
+                            <p v-if="user.admin || user.id == com.userId">Modifier</p>
+                            <p v-if="user.admin || user.id == com.userId" @click.prevent="deleteMessage()">Supprimer</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="comments__new">
+                    <form method="post" class="comments__new__form">
+                        <label for="newComment"><strong>{{userPseudo}} : </strong></label>
+                        <input type="text" name="newComment" v-model="newCommentModel" size="55" autofocus required/>
+                        <input type="submit" value="Soumettre" @click.prevent="submitNewComment()" class="comments__new__form__submit"/>
+                    </form>
                 </div>
             </div>
         </section>
@@ -78,12 +105,14 @@ export default {
             msgs: null,
             nbrLikes: "",
             nbrDislikes: "",
-            nbrComments: "",
+            showComment: "",
+            coms: null,
             showNewMessage: false,
             users:"",
             userPseudo: "",
             userId: "",
             newMessageModel: "",
+            newCommentModel: ""
         };
     },
     methods:{
@@ -96,7 +125,22 @@ export default {
                     }
                 })
                 .then(function(messages){
-                    self.msgs = messages;
+                    self.msgs = messages.message;
+                })
+                .catch(function(err){
+                    console.error(err);
+                })
+        },
+        showComments(){
+            const self = this;
+            fetch (`http://localhost:3000/api/comments/all`)
+                .then(function(res){
+                    if (res.ok){
+                        return res.json();
+                    }
+                })
+                .then(function(comments){
+                    self.coms = comments.comment;
                 })
                 .catch(function(err){
                     console.error(err);
@@ -120,11 +164,33 @@ export default {
                 console.error(err);
             })
         },
+        /*deleteMessage(){
+            const token = JSON.parse(sessionStorage.getItem("user"));
+            fetch (`http://localhost:3000/api/messages/${messageId}`, {method: "delete", headers: {'Accept': 'application/json', 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`}})
+            .then(function(res){
+            if (res.ok){
+                return res.json();
+            }
+            })
+            .then(function(){
+            location.reload();
+            })
+            .catch(function(err){
+            console.log(err);
+            });
+        },*/
         newMessage(){
             if (!this.showNewMessage){
                 this.showNewMessage = true;
             } else {
                 this.showNewMessage = false;
+            }
+        },
+        viewComment(){
+            if (!this.showComment){
+                this.showComment = true;
+            } else {
+                this.showComment = false;
             }
         },
         submitNewMessage(){
@@ -141,6 +207,26 @@ export default {
                     }
                 })
                 .then(function(){
+                    location.reload();
+                })
+                .catch(function(err){
+                    console.log(err);
+                });
+        },
+        submitNewComment(){
+            let comment = {
+                author : this.userPseudo,
+                comment : this.newCommentModel,
+                userId : this.userId
+            }
+            const token = JSON.parse(sessionStorage.getItem("user"));
+            fetch (`http://localhost:3000/api/comments/new`, {method: "post", headers: {'Accept': 'application/json', 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`}, body: JSON.stringify(comment)})
+                .then(function(res){
+                    if (res.ok){
+                        return res.json();
+                    }
+                })
+                .then(function(){
                     //location.reload();
                 })
                 .catch(function(err){
@@ -150,6 +236,7 @@ export default {
     },
     mounted(){
         this.showMessages();
+        this.showComments();
         this.getStorage();
         (() => {
             if (window.localStorage) {
@@ -172,7 +259,8 @@ export default {
 
     #wall{
         display: flex;
-        justify-content: center;
+        flex-direction: column;
+        align-items: center;
         margin-top: 60px;
         font-size: 16px;
         .messages{
@@ -205,6 +293,8 @@ export default {
                     }
                 }
                 &__icons{
+                    display: flex;
+                    align-items: center;
                     .fa-thumbs-up{
                         color: green;
                         cursor: pointer;
@@ -234,6 +324,49 @@ export default {
                         transition-property: transform;
                         transition-duration: 400ms;
                         &:hover{
+                            transform: scale(1.25);
+                        }
+                    }
+                }
+            }
+        }
+        .comments{
+            &__view{
+                &__condition{
+                    border: 3px solid map-get($color, fond_blue);
+                    background-color: white;
+                    &__head{
+                        text-align: left;
+                        strong{
+                            font-weight: bold;
+                        }
+                    }
+                    &__foot{
+                        display: flex;
+                        justify-content: space-around;
+                        align-items: center;
+                        p {
+                            cursor: pointer;
+                            &:hover{
+                                text-decoration: underline;
+                            }
+                        }
+                    }
+                }
+            }
+            &__new{
+                &__form{
+                    &__submit{
+                        background-color: map-get($color, txt_blue);
+                        border-radius: 50px;
+                        color: white;
+                        font-weight: bold;
+                        margin-left: 12px;
+                        cursor: pointer;
+                        transform: scale(1);
+                        transition-property: transform;
+                        transition-duration: 400ms;
+                        &:hover {
                             transform: scale(1.25);
                         }
                     }
