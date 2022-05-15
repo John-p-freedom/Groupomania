@@ -47,18 +47,11 @@ exports.getStorage = (req, res, next) => {
 }
 
 exports.modifyUser = (req, res, next) => {
-  User.findOne({where:{ id: req.params.id }})
-  .then((user) => {
-    if (user !== req.auth.userId) {
-      res.status(403).json({ error: "Utilisateur non authentifié" });
-    }
     const userObject = req.file ?
     {...JSON.parse(req.body.user)} : { ...req.body };
-    User.update({where:{ id: req.params.id }}, { ...userObject, _id: req.params.id })
+    User.update(...userObject, {where:{ id: req.params.id }})
     .then(() => res.status(200).json({ message: "Utilisateur modifié" }))
     .catch((error) => res.status(400).json({ error }));
-  })
-  .catch((error) => res.status(400).json({ error }));
 };
 
 exports.deleteUser = (req, res, next) => {

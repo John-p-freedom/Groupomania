@@ -4,7 +4,7 @@ const Comment = db.comments;
 exports.createComment = (req, res, next) => {
   Comment.create({
     author: req.body.author,
-    commentaire: req.body.commentaire,
+    comment: req.body.comment,
     userId: req.body.userId,
     messageId: req.body.messageId,
   })
